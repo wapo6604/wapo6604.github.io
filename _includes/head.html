@@ -11,3 +11,92 @@
 	<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
 
 </head> 
+
+<!-- for mathjax support -->
+<!-- {% if page.usemathjax %}
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		TeX: {
+			equationNumbers: { autoNumber: "AMS" },
+			tagSide: "right"
+		},
+		tex2jax: {
+			inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+			displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+			processEscapes: true
+		}
+		});
+		MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+		MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+			clearTag() {
+			if (!this.global.notags) {
+				this.super(arguments).clearTag.call(this);
+			}
+			}
+		});
+		});
+	</script>
+	<script type="text/javascript" charset="utf-8"
+		src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+	</script>
+{% endif %} -->
+
+
+<!-- for mathjax support -->
+{% if page.usemathjax %}
+<style>
+.scrollable-equation {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks within the container */
+  max-width: 100%; /* Ensure the container doesn't exceed the width of the page */
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: { autoNumber: "AMS" },
+      tagSide: "right"
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    }
+  });
+  MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+    MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+      clearTag() {
+        if (!this.global.notags) {
+          this.super(arguments).clearTag.call(this);
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript" charset="utf-8"
+  src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+{% endif %}
+
+
+
+<style>
+	.notice {
+	  border: 2px solid #262626;
+	  border-radius: 8px;
+	  padding: 15px;
+	  margin: 10px 0;
+	  background-color: #E7EDF4;
+	  color: #333;
+	}
+	
+	.notice h4 {
+	  margin-top: 0;
+	  color: #425469;
+	}
+	
+	.notice p {
+		margin-top: -1em;
+	  margin-bottom: 0;
+	}
+</style>

@@ -36,16 +36,19 @@ a:hover {
 	color: $link-hover-color;
 	text-decoration: underline;
 }
+
 header {
-	background: $header;
-	padding: 0px 15px;
-	text-align: center;
-	margin: 50px 0 0;
-	height: 50vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+    background: url('../pictures/sea.jpg') no-repeat center center;
+    background-size: cover;
+    padding: 0px 15px;
+    text-align: center;
+    margin: 50px 0 0;
+    height: 50vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 main {
 	padding: 0 15px;
 	max-width: $content-width;
@@ -109,3 +112,18 @@ footer {
 	text-align: center;
 	padding: 40px;
 }
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+  }
+  
+  th, td {
+	border: 1px solid #000; /* Adjust the color as needed */
+	padding: 8px; /* Adjust padding as needed */
+	text-align: left; /* Align text as needed */
+  }
+  
+  th {
+	background-color: #E7EDF4; /* Optional: Add a background color to headers */
+  }

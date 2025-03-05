@@ -5,6 +5,14 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
 
+h3 {
+  margin-bottom: 0.5em;
+  /* Adjust this value to control the space below h3 headings */ }
+
+p {
+  margin-top: 0.5em;
+  /* Adjust this value to control the space above paragraphs */ }
+
 body {
   margin: 0;
   color: #262626;
@@ -43,7 +51,8 @@ a:hover {
   text-decoration: underline; }
 
 header {
-  background: #1D1425;
+  background: url("../pictures/sea.jpg") no-repeat center center;
+  background-size: cover;
   padding: 0px 15px;
   text-align: center;
   margin: 50px 0 0;
@@ -105,6 +114,22 @@ aside {
 footer {
   text-align: center;
   padding: 40px; }
+
+table {
+  border-collapse: collapse;
+  width: 100%; }
+
+th, td {
+  border: 1px solid #000;
+  /* Adjust the color as needed */
+  padding: 8px;
+  /* Adjust padding as needed */
+  text-align: left;
+  /* Align text as needed */ }
+
+th {
+  background-color: #E7EDF4;
+  /* Optional: Add a background color to headers */ }
 
 /**
  * Syntax highlighting styles
