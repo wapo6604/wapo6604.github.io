@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Bayesian Model Selection for Logistic Regression via Approximate Bayesian Inference</title>
+
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="canonical" href="http://localhost:4000/research/vb-summ">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800,600' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
+</head> 
+
+<!-- for mathjax support -->
+<!-- 
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		TeX: {
+			equationNumbers: { autoNumber: "AMS" },
+			tagSide: "right"
+		},
+		tex2jax: {
+			inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+			displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+			processEscapes: true
+		}
+		});
+		MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+		MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+			clearTag() {
+			if (!this.global.notags) {
+				this.super(arguments).clearTag.call(this);
+			}
+			}
+		});
+		});
+	</script>
+	<script type="text/javascript" charset="utf-8"
+		src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+	</script>
+ -->
+
+
+<!-- for mathjax support -->
+
+<style>
+.scrollable-equation {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks within the container */
+  max-width: 100%; /* Ensure the container doesn't exceed the width of the page */
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: { autoNumber: "AMS" },
+      tagSide: "right"
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    }
+  });
+  MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+    MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+      clearTag() {
+        if (!this.global.notags) {
+          this.super(arguments).clearTag.call(this);
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript" charset="utf-8"
+  src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
+
+
+
+<style>
+	.notice {
+	  border: 2px solid #262626;
+	  border-radius: 8px;
+	  padding: 15px;
+	  margin: 10px 0;
+	  background-color: #E7EDF4;
+	  color: #333;
+	}
+	
+	.notice h4 {
+	  margin-top: 0;
+	  color: #425469;
+	}
+	
+	.notice p {
+		margin-top: -1em;
+	  margin-bottom: 0;
+	}
+</style>
+
+<body>
+	<aside>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/education">Education</a></li>
+				<li><a href="/research">ML Projects</a></li>
+				<li><a href="/blog">FSAE Blog</a></li>
+			</ul>
+			</li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+
+
+<header>
+	<h1><a href=""></a></h1>
+</header>
+ 
+	<main>
+		<article>
+			<h2>Bayesian Model Selection for Logistic Regression via Approximate Bayesian Inference</h2>
+   
+    <p>\(\newcommand{\Bf}[1]{\mathbf{#1}}\)
+\(\newcommand{\Bs}[1]{\boldsymbol{#1}}\)</p>
+
+<h3 id="supervised-by-aprof-john-ormerod--dec-2023">Supervised by A/Prof John Ormerod ~ Dec 2023</h3>
+
+<p>This is a short summary and introduction to the work. For the full project, see <a href="/research/vb-full">here</a>.</p>
+
+<p>For the complementary <code>R</code> package, see <a href="https://github.com/thomas-hy-zheng/cvbdl">here</a>.</p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<ol>
+  <li><a href="#background">Background</a></li>
+  <li><a href="#questions">Questions</a></li>
+  <li><a href="#literature-review">Literature Review</a></li>
+  <li><a href="#our-extension">Our Extension</a></li>
+</ol>
+
+<h3 id="background">Background</h3>
+
+<p>Our main goal with this project is to study the problem of modelling the relationship between some numerical predictors $(\mathbf{X})$ and a binary response variable $(\mathbf y)$.</p>
+
+<p>For motivation, lets’ say that we are a car company, and we are testing the temperature at which a component will fail. Suppose we have collected some data, and have plotted it below in Figure <a href="#fig1">1</a></p>
+
+<p><a id="fig1"></a></p>
+<figure>
+  <img src="/_research/vb-pics/slide_1_e1.png" alt="fig1" style="width:100%" />
+  <figcaption>Figure 1: Relationship between working temperature and failure</figcaption>
+</figure>
+
+<p>One method of performing binary classification is called <em>Logistic Regression</em>. The idea is to fit a curve to the data</p>
+
+\[f(x) = \frac{1}{1+e^{-(\beta_0 + \beta_1 x)}}\]
+
+<p>by calculating coefficients $\beta_0$ and $\beta_1$. Here, we used $(\beta_0,\beta_1) = (15.0429, -0.2321627).$ Where the curve is above one half (the red region) we would predict that the component will fail, and where the curve is below one half (the green region) we predict that the component will be alright.</p>
+
+<figure>
+  <img src="/_research/vb-pics/slide_1_e2.png" alt="fig2" style="width:100%" />
+  <figcaption>Figure 2: Areas where we predict failure and no failure</figcaption>
+</figure>
+
+<p>The example we gave has one dimension (temperature) but we can generalise this concept to many dimensions. For a data matrix $\Bf X_{n\times p+1}$, we can fit instead fit a coefficient vector  $\Bs{\beta} = (\beta_0,\dotsb, \beta_p)$. Then we obtain an estimator</p>
+
+\[f(\mathbf{X}) = \frac{1}{1+e^{-\Bf X \Bs \beta}}\,.\]
+
+<p>For example, consider the Pima Indians Diabetes dataset, which measures several predictors of diabetes, $(\mathbf X)$ and whether the test subject does have diabetes as the response $(\mathbf y)$.</p>
+
+<figure>
+  <img src="/_research/vb-pics/slide_2_e1.png" alt="tab1" style="width:100%" />
+  <figcaption>Table 1: Pima Indians Diabetes dataset</figcaption>
+</figure>
+
+<p>However, in the case of many dimensions, we should be careful, because it is likely that not all of the predictors are relevant. Hence, we need to select for the most relevant features. To do this, let $\mathbf{w} \in \{0,1\}^{p+1}$ be a vector and $\Bf W = \mathrm{diag}(\Bf w)$. We call the matrix $\Bf W$ a <em>binary mask</em>, and consider instead</p>
+
+\[f(\mathbf{X}) = \frac{1}{1+e^{-\Bf X \Bf W \Bs \beta}}\,.\]
+
+<p>Now, if the $i$-th entry $w_i$ of the binary mask $\mathbf w$ is $0$, then the $i$-th predictor $\beta_i$ in the regression coefficient vector $\Bs \beta$ will be multiplied by $0$, and have no effect on $f(\mathbf X)$. This way, the feature is dropped from the estimator.</p>
+
+\[\Bf X \Bf W \Bs \beta = \underbrace{\begin{bmatrix}
+  1 &amp; \mathrm{preg}_0 &amp; \cdots &amp; \mathrm{age}_0 \\
+  \vdots &amp;  \vdots &amp;  \ddots &amp; \vdots \\
+  1 &amp;  \mathrm{preg}_p&amp;  \cdots &amp; \mathrm{age}_p \\
+\end{bmatrix} }_{X}
+\underbrace{\begin{bmatrix}
+ w_0 &amp; 0 &amp; 0   \\
+ 0 &amp; \ddots &amp; 0  \\
+ 0 &amp; 0  &amp; w_p  \\
+\end{bmatrix} }_{W \text{ where } w_i \in \{0,1\}}
+\underbrace{\begin{bmatrix}
+ \beta_0  \\
+ \vdots \\
+ \beta_p \\
+\end{bmatrix} }_{\Bs \beta}\,.\]
+
+<p>The process of selecting the relevant predictors for the model is also called <em>model selection</em>.</p>
+
+<h3 id="fitting-the-model">Fitting the Model</h3>
+
+<p>In order to perform inference with our estimator, we need two sets of parameters: some regression coefficients $\Bs \beta$, and a binary mask $\mathbf w$ for selecting our features. We are particularly interested with computing these parameters via Bayesian inference.</p>
+
+<p>The main idea is to use Bayes’ Rule.</p>
+
+<div class="notice">
+  <h4>Definition (Bayes' Rule)</h4>
+  <p>Suppose we want to estimate a parameter $\Bs \theta$, having observed data $\Bs x$. If we assume a \textit{prior} distribution $p(\Bs \theta)$, then we have
+    $$ p(\Bs \theta \mid \Bf x) =\frac{p( \Bf x \mid \Bs \theta ) p(\Bs \theta)}{ \int p(\Bf x \mid \Bs \theta ) p(\Bs \theta) d\Bs \theta }\,. $$ 
+    We call $p(\Bs\theta \mid \mathbf x)$ the posterior density.
+    </p>
+</div>
+
+<p>The idea is that, if we have some prior belief or knowledge about the location of our parameter $\Bs \theta$ within our parameter space, and then we observe some data, then we can use Bayes’ Rule to update our best guess of where $\Bs \theta$ lies.</p>
+
+<figure>
+  <img src="/_research/vb-pics/picbayes.png" alt="picture of Bayes rule" style="width:100%" />
+  <figcaption>Figure 3: Effect of oberved data on the posterior</figcaption>
+</figure>
+
+<p>As shown in the figure, we might take the mode of the posterior density as our estimate for the parameter $\Bs \theta$. This esimtate is called the Maximium Posterior Estimate.</p>
+
+<p>However, there is a big challenge. It is often extremely difficult to compute the integrals involved. For these reason, real world implementations of Bayesian inference revolves around methods of approximating the posterior. One such method is called variational Bayes.</p>
+
+<p>For an arbitrary density $q(\theta)$, define the <em>Kullback-Leiber</em> ($\mathrm{KL}$) divergence to be</p>
+
+\[\mathrm{KL}(q(\Bs \theta),p(\Bs \theta \mid \Bf x)) = \int q(\Bs \theta) \log\left(\frac{q(\Bs \theta)}{p(\Bs \theta \mid \Bf x)}\right) d\Bs \theta \,.\]
+
+<p>The idea of variational Bayes is to transform the integration problem into an optimisation problem, and approximate the posterior by finding densities $q(\Bs \theta)$ that minimise the $\mathrm{KL}$ divergence instead.</p>
+
+<p>In particular, if we let $(\Bs \theta_1,\dotsb,\Bs \theta_M)$ be a partition of our parameter $\Bs \theta$, and assume that each partition is independent (called the mean-field approximation),  we would have</p>
+
+\[q(\Bs \theta) = \prod_{i=1}^M q_i(\Bs \theta_i)\,,\]
+
+<p>and then the optimal $q^*(\theta)$ for minimising $\mathrm{KL}$ would therefore be</p>
+
+\[\begin{equation}
+\label{eq:vb}
+q_i^*(\theta_i) \propto \exp\mathbb E_{-\theta_i}\log(p(\Bf x, \Bs \theta))\,.
+\end{equation}\]
+
+<h4 id="first-approach-use-variational-bayes">First approach: Use Variational Bayes</h4>
+
+<p>Now, we can define our problem. We want to create a predictive model for a logistic regression experiment with:</p>
+<ul>
+  <li>Data matrix $\mathbf{X}$ with $p$ variables</li>
+  <li>Binary response vector $\mathbf{y}$</li>
+  <li>Regression coefficients $\boldsymbol{\beta} = (\beta_0, \ldots, \beta_p)$ with priors $\beta_j \sim \mathrm{Normal}(0, \sigma^2)$</li>
+  <li>Model selection coefficients $\Gamma = (\gamma_0, \ldots, \gamma_p)$ with priors $\gamma_j \sim \mathrm{Bernoulli}(\rho)$</li>
+</ul>
+
+<p>From the parameter space, we will partition $(\Bs \beta,\Gamma)$ into $(\Bs \beta, \gamma_0,\dotsb,\gamma_p)$. Using \ref{eq:vb}, we derive the following variational Bayes estimates for the parameter densities</p>
+
+\[\begin{aligned}
+    q(\Bs \beta) &amp;\propto \exp\left[ \mathcal{L}(\Bs \beta, \Bf X \Bf W , \Bf y) \right] \\
+    q(\gamma_j) &amp;= \frac{\exp(\tau(\gamma_j))}{\exp(\tau(0))+\exp(\tau(1))}
+\end{aligned}\]
+
+<p>where</p>
+
+\[\tau(\gamma_j) := (\Bf X^T \Bf y)_j \mu_j\gamma_j -1^T \log(1+ \exp(\Bf X_j \gamma_j  \mu_j + \Bf X_{-j} \Bf W_{-j} \Bs\mu_{-j}) + \gamma_j \log{\left(\frac{\rho}{1-\rho}\right)}\]
+
+<p>and</p>
+
+\[\mathcal{L}(\Bs \beta, \Bf X \Bf W , \Bf y) := \Bf y^T \Bf X \Bf W  \Bs \beta -  \Bf 1^T \log(\Bf 1 +\exp(\Bf X\Bf W \Bs \beta)) -\frac{1}{2\sigma^2}\| \Bs \beta \|^2\]
+
+<p>However, when we tried to perform parameter estimation on the <code>pima</code> dataset with this system, we found that the model selection coefficients could not converge.</p>
+
+<figure>
+  <img src="/_research/vb-pics/w_vb_fail.png" alt="model coefficients cant converge" style="width:100%" />
+  <figcaption>Figure 4: Model coefficients do not converge</figcaption>
+</figure>
+
+<h4 id="second-approach-use-reverse-collapsed-variational-bayes">Second Approach: Use Reverse Collapsed Variational Bayes</h4>
+
+<p>In response, we alter our approach slightly. We perform variational Bayes estimates at both $\gamma_j =0$ and $\gamma_j = 1$ and then combine the data by integrating out $\Bs \beta$.</p>
+
+\[q(\gamma_j = k) \propto \int_{\mathbb{R}^p} \exp{ \left[ \mathcal{L}(\Bs \beta, \Bf Z , \Bf y) + k\log{\frac{\rho}{1-\rho}} \right]} d\Bs \beta \,.\]
+
+<p>Again, this integral is difficult, so we approximate using the first order Laplace approximation $\Bs \beta \sim N( \widetilde{\Bs \beta} ,  \widetilde{\Bs \Sigma})$.</p>
+
+<p>We get</p>
+
+\[q(\gamma_j = k) = \frac{|\Bs \Sigma_k|^{\frac12}   \exp{\nu{(1)}} }{|\Bs\Sigma_1|^{\frac12}\exp{\nu{(1)}} + |\Bs\Sigma_0|^{\frac12}\exp{\nu{(0)}}}\]
+
+<p>where $\Bs \Sigma_k$ is the covariance matrix of the $\Bs \beta$ Normal approximation at $\gamma_j = k$ and</p>
+
+\[\begin{aligned}
+    \nu(k) := \mathcal{L}(\Bs \beta, \Bf Z , \Bf y) - \frac12 \log{\det(-\Bf \Sigma_k)} + k\log\left(\frac{\rho}{ 1-\rho}\right) \,.
+\end{aligned}\]
+
+<p>This new method was indeed able to converge, and quickly settle on the significant predictors.</p>
+
+<figure>
+  <img src="/_research/vb-pics/w_cvb_success.png" alt="model coefficients now converge" style="width:100%" />
+  <figcaption>Figure 5: Model coefficients converge under RCVB scheme</figcaption>
+</figure>
+
+<p>Now, we can perform simultaneous model fitting and selection. For analysis of our results, see the full report <a href="/research/vb-full">here</a>.</p>
+
+
+		</article>
+		<footer>
+	<small>Built with tools by <a href="http://taniarascia.com">Tania Rascia</small>
+</footer>
+
+	</main>
+</body>
+
+</html>

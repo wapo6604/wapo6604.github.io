@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Hidden Markov Models for Analysing Stress Levels in Working Dogs</title>
+
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="canonical" href="http://localhost:4000/research/hmm-summ">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800,600' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
+</head> 
+
+<!-- for mathjax support -->
+<!-- 
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		TeX: {
+			equationNumbers: { autoNumber: "AMS" },
+			tagSide: "right"
+		},
+		tex2jax: {
+			inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+			displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+			processEscapes: true
+		}
+		});
+		MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+		MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+			clearTag() {
+			if (!this.global.notags) {
+				this.super(arguments).clearTag.call(this);
+			}
+			}
+		});
+		});
+	</script>
+	<script type="text/javascript" charset="utf-8"
+		src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+	</script>
+ -->
+
+
+<!-- for mathjax support -->
+
+<style>
+.scrollable-equation {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks within the container */
+  max-width: 100%; /* Ensure the container doesn't exceed the width of the page */
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: { autoNumber: "AMS" },
+      tagSide: "right"
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    }
+  });
+  MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+    MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+      clearTag() {
+        if (!this.global.notags) {
+          this.super(arguments).clearTag.call(this);
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript" charset="utf-8"
+  src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
+
+
+
+<style>
+	.notice {
+	  border: 2px solid #262626;
+	  border-radius: 8px;
+	  padding: 15px;
+	  margin: 10px 0;
+	  background-color: #E7EDF4;
+	  color: #333;
+	}
+	
+	.notice h4 {
+	  margin-top: 0;
+	  color: #425469;
+	}
+	
+	.notice p {
+		margin-top: -1em;
+	  margin-bottom: 0;
+	}
+</style>
+
+<body>
+	<aside>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/education">Education</a></li>
+				<li><a href="/research">ML Projects</a></li>
+				<li><a href="/blog">FSAE Blog</a></li>
+			</ul>
+			</li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+
+
+<header>
+	<h1><a href=""></a></h1>
+</header>
+ 
+	<main>
+		<article>
+			<h2>Hidden Markov Models for Analysing Stress Levels in Working Dogs</h2>
+   
+    <p>\(\newcommand{\Bf}[1]{\mathbf{#1}}\)
+\(\newcommand{\Bs}[1]{\boldsymbol{#1}}\)</p>
+
+<h3 id="supervised-by-aprof-clara-grazian--march-2024">Supervised by A/Prof Clara Grazian ~ March 2024</h3>
+
+<p>This is a short summary and introduction to the work. For the full project, see <a href="/research/hmm-full">here</a>.</p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<ol>
+  <li><a href="#background">Background</a></li>
+  <li><a href="#experimental-setup">Experimental Setup</a></li>
+  <li><a href="#hidden-markov-models">Hidden Markov Models</a></li>
+  <li><a href="#performing-inference-with-hidden-markov-models">Performing Inference</a></li>
+</ol>
+
+<h3 id="background">Background</h3>
+
+<p>As our best friends, we rely on dogs for some very important and strenuous tasks. For example, we have trained dogs to herd sheep and cattle, perform search and rescue operations, and even help in the military.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/slide1.png" alt="dogs in different circumstances" style="width:100%" />
+  <figcaption>Figure 1: Some examples of how dogs help us out.</figcaption>
+</figure>
+
+<p>Especially in Australia however, where the climate is very hot, these tasks may put the dogs at a high risk of heat stress. This is a challenge for dog handlers, because working dogs, like Kelpies, are bred to be highly resilient and hardworking, so they do not exhibit warning signs until it becomes dangerous. Moreover, different dogs, even of the same breed, and under the same environmental conditions, may have very different responses. Of course, dogs may be working out of the sight of their handlers as well.</p>
+
+<p>These factors make it very hard for handlers to judge a dog’s wellbeing by qualitative means. For this reason, it is useful to be able to detect the signs of overtemperature stress using a quantitative approach.</p>
+
+<h3 id="experimental-setup">Experimental Setup</h3>
+
+<p>In order to test any machine learning algorithm however, we need some data. To collect it, we fitted six kelpies with a harness recording their ECG patterns, respiratory excursions, acceleration and temperature at each dog’s back and belly. Each dog also ingested a pill that measured their internal body temperature.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/slide3.png" alt="pills and harness" style="width:66%" />
+  <figcaption>Figure 2: Left: kelpies wearing sensor harness, right: temperature sensing pill.</figcaption>
+</figure>
+
+<p>The dogs where then given a set of activities to perform throughout the day. The sprint exercise is the most intense activity, and ideally we should be able to detect it within the data as its own “high intensity activity” state.
+The graphs below show the data collected from Bobby’s harness. It is clear that the recorded signals are very noisy.</p>
+
+<div class="scrollable-equation">
+  <figure>
+    <img src="/_research/hmm-pics/datamv2.png" alt="harness data" style="width:180%" />
+    <figcaption> Figure 3: Harness data from Bobby.</figcaption>
+  </figure>
+</div>
+<p>We also have the data collected from Bobby’s temperature sensing pill. This data has a lower frequency, and appears smoother.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/datauv.png" alt="pill data" style="width:100%" />
+  <figcaption>Figure 4: Pill data from Bobby.</figcaption>
+</figure>
+
+<p>From this data, we want to be able to infer the behavioural stress of the dog, and in particular, whether the dog is in a high activity state and hence at a heightened risk of heat stress.</p>
+
+<h3 id="hidden-markov-models">Hidden Markov Models</h3>
+
+<p>First, we introduce some terminology. Represent the current behavioural state of the dog at time $t$ out of $N$ possible states by the random variable $S_t\in \{1,\dotsb, N\}$. 
+For example, we might say that our dog has two behavioural states $\{1,2\}$ where state $1$ is “sleepy” and state $2$ is “excited”, and $S_t = 1$ would mean that at time $t$ the dog is sleepy.</p>
+
+<p>Next, we say that the state sequence $S_{1:T} = (S_1,\dotsb,S_T)$ satisfies the <em>Markov Property</em> if</p>
+
+\[P(S_{t+1}\mid S_{1:(t)}) = P(S_{t+1} \mid S_{t})\,,\]
+
+<p>that is, our prediction about the future behavioural state of the dog depends only on the present behavioural state, and not the sequence of events preceeding it.</p>
+
+<p>We will associate with the state sequence $S_{1:T}$ with an <em>initial probabilites vector</em></p>
+
+\[\boldsymbol{\theta}_{\text{init}} = \big [ P(S_1 = 1), P(S_1=2), \dots, P(S_1=N)\big ] \,.\]
+
+<p>which encodes for the probabilities of the dog being in each behavioural state at the initial time.</p>
+
+<p>We also need to define a <em>transition probabilities matrix</em>: a matrix $\boldsymbol{\theta}_{\text{trans}_{N\times N}}$ such that</p>
+
+\[\boldsymbol{\theta}_{\text{trans}_{i,j}} = P(S_t = i \mid S_{t-1}= j)\,.\]
+
+<p>The transition probabilities matrix encodes for how the dog moves between different behavioural states. Considering the frequency of our data, we ideally want to see large diagonal entries in this matrix 
+to indicate the presence of stable states.</p>
+
+<p>Now, we can represent the observation at time $t$ by the random variable $X_t$, and associate with $X_{1:T}=(X_1,\dots,X_T)$ some distribution parameters $\boldsymbol{\theta}_{\text{obs}}$. For example, we might say $X_1\sim\mathrm{Normal}(0,1)$ and $X_2\sim \mathrm{Normal}(2,3)$, so these pairs of mean and variances would be stored in $\boldsymbol{\theta}_{\text{obs}}$.
+Note that $X_t$ could be a scalar or a random vector as well.</p>
+
+<p>At this stage, we can finally define a <em>Hidden Markov Model</em>.</p>
+
+<div class="notice">
+  <h4>Definition (Hidden Markov Model)</h4>
+  <p>A Hidden Markov Model (HMM) is defined by two sequences</p>
+  <ul>
+      <li>A state sequence \( S_{1:T} \) satisfying the Markov property.</li>  
+      <li>A response sequence \( X_{1:T} \) satisfying the conditional dependence \[ f(X_t \mid S_{1:t} , X_{1:t-1} ) = f(X_t \mid S_t) \,. \]</li>
+  </ul>
+</div>
+
+<p>As an example, suppose again we have two states $\{1,2\}$ representing sleepy and excited respectively. We might expect to see the following structure:</p>
+
+<figure>
+  <img src="/_research/hmm-pics/two-states.png" alt="two states" style="width:100%" />
+  <figcaption>Figure 5: Two state example.</figcaption>
+</figure>
+
+<p>The probability density of the dog’s body temperature is probably lower when sleeping in state $1$ compared to when the dog is excited and playing around in state $2$. For this reason, the probability density of the body temperature $X_t$ takes on a different shape and location depending on whether the dog is sleeping or excited.</p>
+
+<p>The challenge of course is that we do not always know the underlying behavioural state of the dog – this information is “hidden” from us. We would therefore need to infer the underlying state using the observed sensor data.</p>
+
+<h3 id="performing-inference-with-hidden-markov-models">Performing Inference with Hidden Markov Models</h3>
+
+<p>Given a vector of observations $x_{1:T}$, and assuming there are $N$ possible states, we need to first estimate the parameters $\Bs{\theta}_{\text{init}}$, $\Bs{\theta}_{\text{tran}}$ and $\Bs{\theta}_{\text{obs}}$, collectively $\Bs{\theta}$ before we can perform inference on the hidden behavioural state sequence.</p>
+
+<p>We do this by maximising the <em>likelihood function</em>, given by</p>
+
+\[L(\Bs{\theta}) = \sum_{i=1}^Nf(x_{1:T} ,S_T=i\mid \Bs{\theta}) \,.\]
+
+<p>There are two main ways of doing this in the literature. One can simply perform direct maximisation using a numerical optimiser. There is also the Expectation Maximisation algorithm which takes advantage of the conditional structure of the hidden Markov model.</p>
+
+<p>Suppose that we have implemented one of these methods, and have estimated the parameters $\Bs \theta$ of our model. Then, we can decode the most probable hidden state sequence using the <em>Viterbi Algorithm</em>.</p>
+
+<p>The Viterbi Algorithm relies on two components. We first calculate the <em>Forward Pass</em> variable, which contains, given the observed data up to the present time $t$, the likelihood of the most likely sequence that ends at state $S_t = j$ at time $t$.</p>
+
+\[\alpha_{t}(j) := \underset{s_{1:(t-1)}}{\mathrm{max}} f(S_{1:(t-1)} = s_{1:(t-1)}, S_t = j, x_{1:t}) \,.\]
+
+<p>To compute the forward pass variable, we can exploit the following recursion</p>
+
+\[\alpha_{t+1}(i) = f(x_{t+1} \mid S_{t+1} =i) \cdot \underset{j} {\mathrm{max}} \ P(S_{t+1} = i \mid S_t =j)\alpha_{t}(j) \,.\]
+
+<p>Next, we compute the reverse pass variable, which contains at each time $t$, for each possible state $i$, the most likely state at time $t-1$ that preceeded it.</p>
+
+\[\beta_{t}(i) := \underset{j}{\mathrm{argmax}} \  \alpha_{t-1}(j) P(S_t = i\mid S_{t-1}=j)\]
+
+<p>Computing the foward pass and reverse pass variables allows us to decode the hidden state sequence via the Viterbi algorithm.</p>
+
+<p>The idea, described in more detail in the report, is to</p>
+<ol>
+  <li>Keep track of the most likely possible state sequences that end in state $i$ for each $i=1,\dots, N$ at each time $t=1,\dots, T$, while also keeping track of the reverse pass variables.</li>
+  <li>Assign the final state $S_T$ to be the state that the hidden Markov model is most likely to reach, that is, $\tilde{s}_T \gets \underset{i}{\mathrm{argmax}}(\alpha_{T}(i))$.</li>
+  <li>Use the information stored in the reverse pass variables to estimate the most likely state at time $T-1, T-2,\dots, 1$ until the entire state sequence has been decoded, so $\tilde{s}_t \gets \beta_{t+1}(\tilde{s}_{t+1})$.</li>
+</ol>
+
+<p>Now we can estimate the hidden state sequence of a hidden Markov model! 😊</p>
+
+<p>The full report details our findings when we applied these algorithms to the dogs’ harness and pill sensors.</p>
+
+
+		</article>
+		<footer>
+	<small>Built with tools by <a href="http://taniarascia.com">Tania Rascia</small>
+</footer>
+
+	</main>
+</body>
+
+</html>

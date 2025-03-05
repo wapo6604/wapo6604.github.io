@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Hidden Markov Models for Analysing Stress Levels in Working Dogs</title>
+
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="canonical" href="http://localhost:4000/research/hmm-full">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800,600' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
+</head> 
+
+<!-- for mathjax support -->
+<!-- 
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		TeX: {
+			equationNumbers: { autoNumber: "AMS" },
+			tagSide: "right"
+		},
+		tex2jax: {
+			inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+			displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+			processEscapes: true
+		}
+		});
+		MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+		MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+			clearTag() {
+			if (!this.global.notags) {
+				this.super(arguments).clearTag.call(this);
+			}
+			}
+		});
+		});
+	</script>
+	<script type="text/javascript" charset="utf-8"
+		src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+	</script>
+ -->
+
+
+<!-- for mathjax support -->
+
+<style>
+.scrollable-equation {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks within the container */
+  max-width: 100%; /* Ensure the container doesn't exceed the width of the page */
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: { autoNumber: "AMS" },
+      tagSide: "right"
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    }
+  });
+  MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+    MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+      clearTag() {
+        if (!this.global.notags) {
+          this.super(arguments).clearTag.call(this);
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript" charset="utf-8"
+  src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
+
+
+
+<style>
+	.notice {
+	  border: 2px solid #262626;
+	  border-radius: 8px;
+	  padding: 15px;
+	  margin: 10px 0;
+	  background-color: #E7EDF4;
+	  color: #333;
+	}
+	
+	.notice h4 {
+	  margin-top: 0;
+	  color: #425469;
+	}
+	
+	.notice p {
+		margin-top: -1em;
+	  margin-bottom: 0;
+	}
+</style>
+
+<body>
+	<aside>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/education">Education</a></li>
+				<li><a href="/research">ML Projects</a></li>
+				<li><a href="/blog">FSAE Blog</a></li>
+			</ul>
+			</li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+
+
+<header>
+	<h1><a href=""></a></h1>
+</header>
+ 
+	<main>
+		<article>
+			<h2>Hidden Markov Models for Analysing Stress Levels in Working Dogs</h2>
+   
+    <h3 id="supervised-by-aprof-clara-grazian--march-2024">Supervised by A/Prof Clara Grazian ~ March 2024</h3>
+
+<p>For a summary of the project, see <a href="/research/hmm-summ">here</a>.</p>
+
+<p>For the original report as uploaded to AMSI, see <a href="https://srs.amsi.org.au/student-profile/thomas-hanyang-zheng/">here</a>.</p>
+
+<p>\(\newcommand{\Bf}[1]{\mathbf{#1}}\)
+\(\newcommand{\Bs}[1]{\boldsymbol{#1}}\)</p>
+
+<h3 id="abstract">Abstract</h3>
+<p>Working dogs are highly susceptible to heat stress because they engage in high-intensity activities, while they are bred to show resilience and ignore discomfort.
+We attempt to develop a quantitative model to predict the onset of heat stress in working dogs of the Kelpie breed using ECG, respiratory excursion, and temperature data collected from the dogs as they exercise throughout the day. We do this by fitting some hidden Markov models to the denoised data. 
+We interpret the dogs’ underlying behavioural state by matching the estimated state sequence from the hidden Markov model with the activities the dogs engaged in at that time.
+We also evaluate the usefulness and tradeoffs of the different sensors for this analysis.</p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<ol>
+  <li><a href="#introduction">Introduction</a>
+    <ol>
+      <li><a href="#motivation">Motivation</a></li>
+      <li><a href="#overview-of-experiment">Overview of Experiment</a></li>
+      <li><a href="#hmms-for-animal-behaviour-analysis">HMMs for Animal Behaviour Analysis</a></li>
+    </ol>
+  </li>
+  <li><a href="#aims">Aims</a></li>
+  <li><a href="#methodology">Methodology</a>
+    <ol>
+      <li><a href="#overview-of-data">Overview of Data</a></li>
+      <li><a href="#data-cleaning">Data Cleaning</a></li>
+      <li><a href="#parameter-estimation">Parameter Estimation</a></li>
+    </ol>
+  </li>
+  <li><a href="#results">Results</a></li>
+  <li><a href="#discussion">Discussion</a>
+    <ol>
+      <li><a href="#pill-data-discussion">Pill Data Discussion</a></li>
+      <li><a href="#harness-data-discussion">Harness Data Dicussion</a></li>
+      <li><a href="#future-directions">Future Directions</a></li>
+    </ol>
+  </li>
+  <li><a href="#conclusion">Conclusion</a></li>
+  <li><a href="#codes">Codes</a></li>
+  <li><a href="#references">References</a></li>
+</ol>
+
+<h3 id="introduction">Introduction</h3>
+
+<h4 id="motivation">Motivation</h4>
+
+<p>Humans rely on working dogs for many tasks, including livestock herding, search and rescue services, and military missions. These tasks often demand high physical exertion over long durations and may also take place in high-temperature environments. As a result, dogs performing these tasks are at a high risk of temperature stress, which in serious cases, can become life-threatening.</p>
+
+<p>In the field, handlers are responsible for assigning tasks to their working dogs (Thomas, 2022).
+Handlers also mandate rest periods to keep their dogs safe from overheating and heat stress. Handlers do this by observing behavioural cues: dogs experiencing heat stress will often pant heavily, seek shade and water, and exhibit an overall reluctance to move (Starling et al. 2022). However, using these behavioural cues for detecting heat stress in working dogs poses some challenges.</p>
+
+<p>In particular, working dogs are specifically bred for resilience and to ignore discomfort, so they often do not show these warning signs until the dog is already heat-stressed (Starling et al. 2022). Moreover, some activities, like search and rescue, necessarily require the dog to work independently and potentially out of sight from their handlers. In these cases, handlers must plan out their dogs’ working and resting periods by estimating the rate at which their dogs’ internal body temperature will rise as a function of the type of activity they are doing and current environmental conditions (O’Brien et al. 2020). This estimation is made more challenging by the variation in fitness levels between different working dogs, meaning that the rate of body temperature increase in working dogs and their heat stress thresholds can vary considerably between different dogs and days. Crucially, the margin for error is small: while the typical body temperature for a working dog is $40.5-41^{\circ}\mathrm{C}$, the body temperature rising above $42^{\circ}\mathrm{C}$ can pose fatal dangers (Gordon, 2017).</p>
+
+<p>To overcome the challenges of using qualitative behavioural cues, investigating methods of detecting heat stress in working dogs using quantitative analysis of sensor data would allow handlers to better protect the physical and mental well-being of the dogs they deploy.</p>
+
+<h4 id="overview-of-experiment">Overview of Experiment</h4>
+
+<p>Starling et al. (2022) conducted an experiment over the summer of 2022 to collect data on working dogs for building a model for heat stress. Six working dogs of the Kelpie breed were fitted with a custom harness with sensors recording ECG, acceleration, respiratory excursions, and temperature data. Table <a href="#datastream">1</a> briefly describes how each data stream is collected.</p>
+
+<p><a id="datastream"></a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Data Stream</th>
+      <th>Brief Description of Sensor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>ECG</strong></td>
+      <td>Biopotential measurement performed by MAX30003 IC. Conductive gel applied to the ECG electrodes for better contact.</td>
+    </tr>
+    <tr>
+      <td><strong>Respiratory Excursion</strong></td>
+      <td>Constant current source through a piece of fabric (Holland Shielding) that changes resistance based on stretch. Voltage measured by the ADS1247 ADC.</td>
+    </tr>
+    <tr>
+      <td><strong>Harness Temperature (Top/Bottom)</strong></td>
+      <td>Temperature measurement performed by MAX30205 IC.</td>
+    </tr>
+    <tr>
+      <td><strong>Internal Body Temperature</strong></td>
+      <td>Measured by BodyCap temperature pill. Dogs administered pill 48 hours before experiment.</td>
+    </tr>
+    <tr>
+      <td><strong>Integration</strong></td>
+      <td>Harness supplied by Auroth Pets, microcontroller is the CC2640R2F.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Table 1. Overview of data collection devices</p>
+
+<p>The dogs also ingested a BodyCap pill which recorded their internal body temperature.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/dogs-cropped.jpg" alt="two dogs with the harness" style="width:100%" />
+  <figcaption>Figure 1: Two working dogs fitted with sensor harness.</figcaption>
+</figure>
+
+<p>Throughout the day, the dogs engaged in four low-intensity exercises and one high-intensity exercise. All activities involved the dog following a chase vehicle (Starling et al. 2022). They are described below</p>
+
+<p>Each exercise activity would be followed by a $1$ hour resting period. If a dog began lagging from the pace of the chase vehicle or exhibited a reluctance to move, the exercise would be halted, and the dog would be allowed to rest. This way, the dogs were always kept safe from heat stress.</p>
+
+<p>Data collected from the dog Bobby is shown in Figure <a href="#bobby1">2</a>.</p>
+
+<p><a id="bobby1"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/datamv_uncropped.png" alt="Bobby data" style="width:100%" />
+  <figcaption>Figure 2: Bobby's harness sensor data.</figcaption>
+</figure>
+
+<h4 id="hmms-for-animal-behaviour-analysis">HMMs for Animal Behaviour Analysis</h4>
+
+<p>To interpret the sensor data, we considered a biological model where the dog transitions between a group of underlying behavioural states, which can be interpreted as potential levels of stress. While we may not be able to observe the underlying behavioural state, for example, if the dog is experiencing a high level of potentially dangerous stress, we can always observe the sensor outputs which are assumed to be a direct result of the dog’s current behavioural state. We therefore wish to assign each of our recorded data points to these underlying behavioural states and use the activity timetable to identify states of stress.</p>
+
+<p>This clustering process is most naturally represented by hidden Markov models (HMMs), which are a flexible family of models for the analysis and clustering of serially correlated time series data (Pohle et al. 2017). They have been successfully used to develop models for related biological problems like animal hunting movement (Mastrantonio et al. 2019) and whale diving behaviour (DeRuiter et al. 2017).</p>
+
+<p>A hidden Markov model is defined by two sequences: a hidden state sequence, and an observed response sequence. Assuming that there are $N$ hidden behavioural states, we can model the activity state at time $t$ by the random variable $S_t$ with image points $S_t\in{1,2,\dotsb,N}$. We denote a state sequence of length $T$ by the random vector $S_{1:T} := (S_1,\dotsb,S_T)$, and we require the sequence to satisfy the <em>Markov property</em>, so for each $t = 2,\dotsb,T$ we have</p>
+
+<p>\[ P(S_t \mid S_{1:(t-1)} ) = P(S_t\mid S_{t-1})\,. \]</p>
+
+<p>We also represent the response sequence of length $T$ by a sequence of random variables $X_{1:T}=(X_1,\dotsb,X_T)$ where $X_t$ represents the measurement at time $t$. Importantly $X_t$ may be either a scalar or a random vector. We require, for each $t=1\dotsb,T$, the conditional dependence</p>
+
+<p>\[ f(X_t\mid S_{1:t}, X_{1:{t-1}} ) = f(X_t\mid S_t) \,. \]</p>
+
+<p>Figure <a href="#hm1">3</a> represents this conditional structure.</p>
+
+<p><a id="hm1"></a></p>
+<figure>
+  <br />
+  <img src="/_research/hmm-pics/sequence.png" alt="HMM sequence diagram" style="width:100%" />
+  <br /><br />
+  <figcaption>Figure 3: Dependence structure of HMM.</figcaption>
+</figure>
+
+<p>HMMs are therefore a natural way to analyse the working dog data because they automatically cluster each data point into underlying hidden states. For the data collected by the pill, let $X_{t,\mathrm{pill}}$ be the random variable modelling the internal body temperature at time $t$. For the data collected by the harness, let $\Bf{X}_{t, \mathrm{harness}}$ be a multivariate random variable modelling the ECG, respiratory excursion, and temperature observations at time $t$. Assume that $X_{t,\mathrm{pill}}$ can be modelled with a univariate Normal distribution, and  $\Bf{X}_{t,\mathrm{harness}}$ with a multivariate Normal distribution.</p>
+
+<p>Since the parameters of the normal distributions for $X_{t,\mathrm{pill}}$ and $\Bf{X}_{t,\mathrm{harness}}$ depend on the allocated level of stress for each data point, observations allocated to the same level of stress by the HMM are more likely to show similar values of temperature and other measurements, allowing us to make predictions about the stress level of the dog.</p>
+
+<h3 id="aims">Aims</h3>
+
+<p>Our main aim for this report is to fit HMMs to the data collected by Starling et al. (2022). We aim to fit a univariate HMM to the pill data, and a multivariate HMM to the harness data. We then aim to use the clusters detected by these HMM models to interpret a \say{stressed} behavioural state and evaluate the use of HMMs for this application.</p>
+
+<p>We also aim to test the quality of the data collected for this experiment and to understand whether we can interpret the level of stress of the dog only by looking at the recorded data and without knowing what the dog doing at the time.</p>
+
+<h3 id="methodology">Methodology</h3>
+
+<p>The experimental data also includes a complete list of the dogs’ activities and behaviours with corresponding observation times. However, we performed our analysis assuming that we did not know what the dog was doing and then interpreted our model with respect to the true activity sheet.</p>
+
+<h4 id="overview-of-data">Overview of Data</h4>
+
+<p>The ECG and respiratory excursion sensors in the harness recorded data at a frequency of $100 \mathrm{Hz}$ and the temperature sensors at a frequency of $1 \mathrm{Hz}$. To fit HMMs to the data, we averaged every $100$ ECG and respiratory excursion observations to reduce their signal frequency to that of the temperature sensors. Since we are working with long time series, this shortening procedure was not a concern. However, in a future iteration of this experiment, it would be better to sample all the sensors at a common intermediate frequency like $10\mathrm{Hz}$.</p>
+
+<p>Since the experiment relied on a custom-manufactured harness and sensor array, there were also some issues with the data collected. Table <a href="#harness2">2</a> summarises the issues found with each dog’s harness.</p>
+
+<p><a id="harness2"></a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Dog</th>
+      <th>Harness Faults</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Abby</strong></td>
+      <td>No data collected.</td>
+    </tr>
+    <tr>
+      <td><strong>Bobby</strong></td>
+      <td>No faults.</td>
+    </tr>
+    <tr>
+      <td><strong>Franky</strong></td>
+      <td>Respiratory excursion sensor disconnected after 2 hours. Harness temperature readings do not follow the same shape.</td>
+    </tr>
+    <tr>
+      <td><strong>Toby</strong></td>
+      <td>All data is present. Sometimes the values obtained by the harness sensors are erratic. Possibly a fit issue. Harness temperature readings do not follow the same shape.</td>
+    </tr>
+    <tr>
+      <td><strong>Mallee</strong></td>
+      <td>No data from temperature sensors on top and bottom of the harness.</td>
+    </tr>
+    <tr>
+      <td><strong>Ruby</strong></td>
+      <td>All data is present. Sometimes the values obtained by the harness sensors are erratic. Possibly a fit issue.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Table 2. Overview of harness sensor faults afflicting each dog</p>
+
+<p>In the cases of Franky and Toby, the top and bottom temperature measurements from the dogs sometimes did not follow the same shape. Figure <a href="#harness3">4</a> shows this behaviour in Franky’s temperature sensors, where this discrepancy is very pronounced after 1:45 pm. We considered temperature data with this sort of divergence to be an inaccurate and invalid measurement of the dog’s true body temperature and did not use it in our analysis.</p>
+
+<p><a id="harness3"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/franky_temp1.png" alt="Franky temperature plot" style="width:100%" />
+  <figcaption>Figure 4: Franky's harness showing divergent measurements.</figcaption>
+</figure>
+
+<p>We also observed the BodyCap pill recording significant dips in internal body temperature when the dogs drank water. Figure <a href="#pill_drinking1">5</a> shows these dips in Bobby’s temperature pill graph.</p>
+
+<p><a id="pill_drinking1"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/simple_drinking_1.png" alt="Effect of drinking on internal body temperature" style="width:100%" />
+  <figcaption>Figure 5: Effect of the dog drinking on recorded internal body temperature.</figcaption>
+</figure>
+
+<p>Throughout this report, we will focus mainly on the data cleaning and HMM analysis performed on the data collected by dog Bobby, since the data he generated was the most intact and free of errors. We will occasionally refer to other dogs when necessary.</p>
+
+<h4 id="data-cleaning">Data Cleaning</h4>
+
+<p>The data collected is very noisy, with the largest contribution being the dog’s movements. The dog’s acceleration would directly induce noise into sensitive electronics like the ECG monitoring sensor. 
+We could also observe the dog’s movement causing sporadic loss of contact between the sensors in the dog’s harness and their body.
+To deal with this, we applied some standard denoising steps to the data obtained from each sensor.</p>
+
+<p>First, we perform initial data smoothing by applying a wavelet-based denoising method (Chatterjee et al. 2020). We used the <code class="language-plaintext highlighter-rouge">denoise.dwt</code> discrete wavelet denoiser from the <code class="language-plaintext highlighter-rouge">rwt</code> package (Roebuck 2014).</p>
+
+<p>Next, we apply either a bandpass or lowpass Butterworth filter using the <code class="language-plaintext highlighter-rouge">butter</code> and <code class="language-plaintext highlighter-rouge">filtfilt</code> functions from the <code class="language-plaintext highlighter-rouge">signal</code> package (Ligges et al. 2023). The cutoff frequencies are described in Table <a href="#denoise">3</a>.</p>
+
+<p><a id="denoise"></a></p>
+<table>
+  <thead>
+    <tr>
+      <th>Data Stream</th>
+      <th>Corner Frequencies</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ECG</td>
+      <td>Bandpass filter with corner frequencies 5Hz, 18Hz. These values were recommended by Jin et al. 2024 for preserving ECG features.</td>
+    </tr>
+    <tr>
+      <td>Respiratory Excursion</td>
+      <td>Lowpass filter with corner frequency 5Hz. This value was chosen empirically under the assumption that a dog does not pant at more than 300 breaths per minute (Becker 2011).</td>
+    </tr>
+    <tr>
+      <td>Harness Temperature (Top/Bottom)</td>
+      <td>Lowpass filter with corner frequency 8Hz. This value was chosen empirically.</td>
+    </tr>
+    <tr>
+      <td>Internal Body Temperature</td>
+      <td>Only the wavelet denoiser was applied. The data was considered sufficiently smooth and did not require further filtering.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Table 3. Overview of filtering frequencies for each data stream</p>
+
+<h4 id="parameter-estimation">Parameter Estimation</h4>
+
+<p>To characterise the state sequence and response sequence of a hidden Markov model, we need to provide three sets of parameters. Assuming our HMM has length $T$ and there are $N$ hidden states, we can first decide upon an initial probabilities vector $\Bs{\theta}_{\mathrm{init.}} \in \mathbb{R}^N$ where the $i$-th coefficient is the probability $P(S_1=i)$ for $i\in {1,\dotsb, N}$, that is,</p>
+
+<p>\[\Bs{\theta_{\mathrm{init.}}} = \begin{bmatrix} P(S_1 = 1) &amp; \dotsb &amp; P(S_1 = N) \end{bmatrix} \,.\]</p>
+
+<p>We must also estimate the transition probabilities matrix $\Bs{\theta}_{\mathrm{trans.}} \in \mathbb{R}^{N\times N}$ where the $i,j$-th coefficient is given by</p>
+
+<p>\[\Bs{\theta_{\mathrm{trans.}, i,j}} = P(S_t = i \mid S_{t-1} = j)\,\]</p>
+
+<p>for $i,j\in {1,\dotsb,N}$. Moreover, for each possible state $S_t=i$, there is a conditional distribution for the response $X_t \mid S_t = i$. Under the assumption that the responses are normally distributed, we need to estimate $N$ pairs of mean and variance values, one pair for each state. Denote these estimated density parameters altogether as $\Bs{\theta}_{\mathrm{obs.}}$.</p>
+
+<p>Having observed a sequence of responses $x_{1:T}$, we can estimate the parameters $\Bs{\theta_{\mathrm{init.}}}, \Bs{\theta_{\mathrm{trans.}}}$ and $\Bs{\theta_{\mathrm{obs.}}}$ (collectively $\Bs{\theta} := [ \Bs{\theta_{\mathrm{init.}}}, \Bs{\theta_{\mathrm{trans.}}}, \Bs{\theta_{\mathrm{obs.}}}]$), by maximising the likelihood function with respect to the parameter space, defined as</p>
+
+\[L(\Bs{\theta}|x_{1:T} ) = \sum_{i=1}^N f_{X_{1:T},S_T} (x_{1:T},S_T = i|\Bs{\theta}) \,.\]
+
+<p>In the case of our experiment, this maximisation can only be done using numerical methods. Since the estimated transition matrix $\Bs{\theta_{\mathrm{trans.}}}$ must have columns that sum to $1$, and some of the parameters contained in $\Bs{\theta_{\mathrm{obs.}}}$ like the variance of each normal component must be positive, one may use either a general-purpose optimiser like BFGS-B, that can handle box constraints (Fletcher 1987), or apply a transformation to these variables so the overall optimisation problem becomes unconstrained (Zucchini, MacDonald &amp; Langrock 2016). However, the HMM likelihood often contains many local maxima, hence real-world implementations involve running the optimisation algorithm over a large number of random starting points.</p>
+
+<p>In the <code class="language-plaintext highlighter-rouge">R</code> language, which is an interpreted language with high overhead, attempting to perform direct maximisation on the likelihood function with multiple random starts proved to be too slow for the size of our dataset. To overcome this, we used an algorithm called expectation maximisation, which is a type of hill-climbing method that is empirically more resilient to local minima and is fast for Normal-distributed and Gamma-distributed responses. Our implementation of this algorithm, adapted from  Visser &amp; Speekenbrink (2022), is described in the Appendix.</p>
+
+<p>The Viterbi Algorithm relies on two components. The first is a <em>forward pass variable</em>, denoted $\alpha_{t}(j)$ for $t = 1,\dotsb,T$ and $j = 1\dots, N$ where</p>
+
+\[\alpha_{t}(j) := \underset{s_{1:(t-1)}}{\mathrm{max}} f(S_{1:(t-1)} = s_{1:(t-1)}, S_t = j, x_{1:t})  \,,\]
+
+<p>which keeps track of the joint density of the most likely state sequence ending at $S_t = j$ considering all the observations $x_1$ to $x_t$. Usefully, we can derive a recursive formula to calculate $\alpha$ quickly (Visser &amp; Speekenbrink 2022), since</p>
+
+\[\begin{aligned}
+    f(S_{t+1}, S_{1:t} , x_{t+1}, x_{1:t} ) &amp;= f(x_{t+1}\mid S_{t+1}, x_{1:t}, S_{1:t}) P(S_{t+1}\mid x_{1:t}, S_{1:t})f(x_{1:t},S_{1:t}) \\
+    &amp;= f(x_{t+1}\mid S_{t+1}) P(S_{t+1}\mid s_t)f(x_{1:t}, S_{1:t})\,.
+\end{aligned}\]
+
+<p>which upon maximisation over all possible sequences $s_{1:t}$ yields</p>
+
+\[\alpha_{t+1}(i) = f(x_{t+1} \mid S_{t+1} =i) \cdot \underset{j} {\mathrm{max}} \ P(S_{t+1} = i \mid S_t =j)\alpha_{t}(j) \,.\]
+
+<p>The second is a <em>reverse pass variable</em>, denoted $ \beta_{t}(i)$ for $t = 1,\dotsb,T$ and $i = 1\dots, N$ where</p>
+
+\[\beta_{t}(i) := \underset{j}{\mathrm{argmax}} \  \alpha_{t-1}(j) P(S_t = i\mid S_{t-1}=j) \,.\]
+
+<p>The variable $\beta_{t}(i)$ tracks, for each state $S_t=i$, the most likely preceding state $S_{t-1}$. We implemented this algorithm by instead computing the log-densities and log-probabilities for better numerical behaviour, as shown in Algorithm <a href="#viterbi">1</a>.</p>
+
+<p><a id="viterbi"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/algo1.png" alt="Viterbi Algorithm with Log-probabilities" style="width:100%" />
+  <figcaption>Algorithm 1: Viterbi Algorithm with Log-probabilities.</figcaption>
+  <br />
+</figure>
+
+<h3 id="results">Results</h3>
+
+<h4 id="model-selection">Model Selection</h4>
+
+<p>We were able to fit models of sizes $N=1,\dots,10$, while larger models exhibited numerical stability issues. The AIC/BIC scores for the univariate and multivariate models are plotted in Figure <a href="#AICBIC">6</a>, showing that a global minimum point is not well defined in both cases.</p>
+
+<p><a id="AICBIC"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/aicbic.png" alt="AIC/BIC plots" style="width:100%" />
+  <figcaption>Figure 6: AIC/BIC plots of HMM clusterings</figcaption>
+  <br />
+</figure>
+
+<p>One possible reason is that the normal components we are using for our model response are only an approximation of the underlying data-generating process behind each observation (Pohle et al. 2017), leading the HMM to add extra states to account for this difference, even if these extra states do not have any biological meaning.</p>
+
+<p><a id="5AICBIC"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/5aicbic.png" alt="Truncated AIC/BIC plots" style="width:100%" />
+  <figcaption>Figure 7: Truncated AIC/BIC plots</figcaption>
+  <br />
+</figure>
+
+<p>Recognising that AIC/BIC criteria tends to overestimate the number of hidden states, we decided that any model with more than $5$ hidden states was biologically implausible. Truncating our AIC/BIC plots at $5$ hidden states, as shown in Figure <a href="#5AICBIC">7</a>, we see that models with $3$, $4$ and $5$ hidden states have similarly low AIC and BIC scores, hence we considered them all as candidate models.</p>
+
+<h4 id="univariate-pill-models">Univariate Pill Models</h4>
+<p>In this analysis, the colours are only used as labels and there is no correspondence with the colours between the $3$, $4$ and $5$ state models. 
+Figure <a href="#bobbypill3">8</a> shows the HMM fitted on Bobby’s pill data with three hidden states.</p>
+
+<p><a id="bobbypill3"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbypill3dr.png" alt="3 state HMM" style="width:100%" />
+  <figcaption>Figure 8: HMM fitted on Bobby's pill data with 3 states</figcaption>
+</figure>
+
+<p>We can see that there is a low activity state in red that appears during the Trial $A$ and Trial $B$ activities, as well as the resting periods. The dog’s internal body temperature is stable during these times. We also see a higher-intensity exercise state in blue that appears during the sprint and parts of Trial $D$. Finally, we see that there is a green state that corresponds to sharp dips in temperature, caused by the dog drinking water.</p>
+
+<p>With the addition of a fourth state, plotted in Figure <a href="#bobbypill4">9</a>, we see that the low activity state of the three-state model has split into a resting state, shown in green, and a low-intensity exercise state, in purple.</p>
+
+<p><a id="bobbypill4"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbypill4.png" alt="4 state HMM" style="width:100%" />
+  <figcaption>Figure 9: HMM fitted on Bobby's pill data with 4 states</figcaption>
+</figure>
+
+<p>Usefully, the model can detect that the sprint is a higher-intensity activity and has clustered it in blue compared to the trot exercises in the purple state. However, we still see a red state allocated to sharp drops in temperature corresponding to the dog drinking water.</p>
+
+<p>Adding the fifth state does not immediately yield a simple interpretation, as shown in Figure <a href="#bobbypill5">10</a>.</p>
+
+<p><a id="bobbypill5"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbypill5.png" alt="4 state HMM" style="width:100%" />
+  <figcaption>Figure 10: HMM fitted on Bobby's pill data with 5 states</figcaption>
+</figure>
+
+<p>It is clear that the model is having trouble separating the sharp rises in temperature due to the dog drinking water from the dog performing high-intensity activities like the sprint exercise.</p>
+
+<h4 id="multivariate-harness-models">Multivariate Harness Models</h4>
+
+<p>The multivariate HMMs for the harness data were fitted using the <code class="language-plaintext highlighter-rouge">depmixS4</code> package. The fitted three-state HMM for Bobby’s harness is shown in Figure <a href="#bobbyharness3">11</a>.</p>
+
+<p><a id="bobbyharness3"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbymv3.png" alt="3 state HMM" style="width:100%" />
+  <figcaption>Figure 11: HMM fitted on Bobby's harness data with 3 states</figcaption>
+</figure>
+
+<p>We see that the model can identify when the dog is exercising, and has clustered those points in blue. This is characterised by high variance in the recorded ECG and temperature signals, and higher mean in the respiratory band values. The model also divided the resting periods into a red and green state, with the red state characterised by lower magnitude ECG signals, and the green state by relatively stable temperature values. Reassuringly, the data collected by the harness does not seem to be affected by the dog drinking water. However, we still see some sharp dips in temperature, this time during the activity periods rather than the resting periods, which may be due to the temperature sensor in the harness losing contact with the dog’s body as it moves around.</p>
+
+<p><a id="bobbyharness4"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbymv4.png" alt="4 state HMM" style="width:100%" />
+  <figcaption>Figure 12: HMM fitted on Bobby's harness data with 4 states</figcaption>
+</figure>
+
+<p>Figure <a href="#bobbyharness4">12</a> shows the effect of adding a fourth state. While the model clearly identifies when the dog is exercising, clustering these times in a purple state, it is not able to isolate the sprint as a higher-intensity activity compared to the lower-intensity trot exercises.</p>
+
+<p><a id="bobbyharness5"></a></p>
+<figure>
+  <img src="/_research/hmm-pics/bobbymv5.png" alt="4 state HMM" style="width:100%" />
+  <figcaption>Figure 13: HMM fitted on Bobby's harness data with 5 states</figcaption>
+</figure>
+
+<p>Moreover, the addition of a fifth state, as shown in Figure <a href="#bobbyharness4">13</a>, does not improve matters - the HMM keeps breaking up the resting periods.</p>
+
+<h3 id="discussion">Discussion</h3>
+
+<h4 id="pill-data-discussion">Pill Data Discussion</h4>
+
+<p>The four and five-state HMMs fitted to the pill data were able to cluster the sprint exercise separately from the low-intensity trot exercises. However, the data from the pill showed sharp dips when the dog drank water, indicating that there are significant trade-offs with using the pill for analysing stress levels. In particular, the times when the dog wants to drink the most would be when it is performing high-intensity exercises, and that is exactly when we want the best data to make stress predictions, something the pill can’t guarantee if it’s affected by the dog drinking water.</p>
+
+<p>However, if the dog is working independently of their handler, being able to detect when the dog is drinking water is still useful, not only because it is information that the handler would not be able to obtain otherwise, but also because the act of the dog drinking can itself hint to underlying heat stress and discomfort.</p>
+
+<h4 id="harness-data-discussion">Harness Data Discussion</h4>
+
+<p>The harness data was substantially noisier than the pill data. As the dog moved, we could also observe the harness generating unintelligible data due to the sensors in the harness losing contact with the dog’s body. The poor quality of this data likely also led to our HMMs’ inability to cluster the higher-intensity sprint separately from the lower-intensity trot exercises, even with five hidden states. We believe that these disconnections and noise are caused by a poor harness fit, and unless this is addressed, would present major difficulties in a real-world deployment where a dog may be working independently and their handler may not be present to adjust their harness if it shifts out of place.</p>
+
+<h4 id="future-directions">Future Directions</h4>
+<p>From our analysis, we have identified several directions for research and development.</p>
+
+<ul>
+  <li><strong>Improve Harness Fit:</strong> The data collected by the harness was not affected by the dog drinking water. Therefore, if we can develop a new harness that fits more comfortably and provides better contact between the sensors and the dog’s body, we may be able to collect higher-quality data that allows a multivariate HMM to separate the sprint state from the low-intensity trot exercises. Possibilities include investigating harnesses from different vendors or developing a bespoke harness that better integrates the required electronics.</li>
+  <li><strong>Adaptive Calibration Algorithms:</strong> Since it is unrealistic to expect perfect sensor contact, it would be useful to investigate methods of correcting for sensor drift over time, possibly including machine learning techniques (Tan et al. 2010).</li>
+  <li><strong>On the Fly Decoding:</strong> While we performed our analysis on the full dataset, there are alternative algorithms that successively classify data points as they are streamed in “on the fly”. It would be useful to investigate the practicality of these algorithms for real-time detection of heat stress.</li>
+</ul>
+
+<h3 id="conclusion">Conclusion</h3>
+
+<p>In this work, we fitted univariate HMMs to internal body temperature data and multivariate HMMs to ECG, respiratory excursion and external temperature data collected by working dogs as they performed some exercises of varying intensity throughout the day. 
+We determined that HMMs fitted to the dogs’ internal body temperature were able to cluster the sprint activity as a higher intensity state compared to the low-intensity trot exercises. However, the temperature-sensing pill used to collect this data recorded large dips in temperature when the dog drank water.</p>
+
+<p>We also determined that the data collected by the harness was too noisy for the multivariate HMMs to isolate the sprint activity as separate from the low-intensity trot exercises. Some avenues for future research to improve the data collected by the harness include exploring methods of improving comfort and adaptive calibration algorithms. We also believe investigating on-the-fly decoding algorithms would also be useful in validating the real-world practicality of our approach.</p>
+
+<h3 id="codes">Codes</h3>
+
+<h4 id="the-expectation-maximisation-algorithm">The Expectation Maximisation Algorithm</h4>
+<p>Our implementation for fitting univariate HMMs was adapted from Visser &amp; Speekenbrink (2022). The code is provided below.</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1"># (Scaled) Forward Backward Algorithm implementation</span>
+<span class="n">fb</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">tpm</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="c1"># Initialise the variables</span>
+  <span class="n">nt</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">data</span><span class="p">);</span> <span class="n">nstates</span> <span class="o">=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">tpm</span><span class="p">);</span> <span class="no">A</span> <span class="o">=</span> <span class="n">tpm</span><span class="p">;</span> <span class="no">B</span> <span class="o">=</span> <span class="n">densities</span>
+  <span class="n">beta</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">nrow</span> <span class="o">=</span> <span class="n">nt</span><span class="p">)</span>  
+  <span class="n">ct</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="n">nt</span><span class="p">)</span>
+  
+  <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">]</span> <span class="o">=</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">*</span> <span class="no">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">]</span> <span class="c1"># Calculate the forward probabilities </span>
+  
+  <span class="n">ct</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">,])</span>   <span class="c1"># Compute the scaling variables</span>
+  
+  <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">,]</span> <span class="o">=</span> <span class="n">ct</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">1</span><span class="p">,]</span> <span class="c1"># Compute the scaled forward probabilities</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="n">t</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:(</span><span class="n">nt</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)){</span> 
+    <span class="c1"># Use recursive structure of forward probabilities to calculate for each t</span>
+    <span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,]</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="no">A</span><span class="p">)</span> <span class="o">%*</span><span class="sx">% alpha[t, </span><span class="p">])</span> <span class="o">*</span> <span class="no">B</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">]</span> 
+    <span class="c1"># Compute the scaling variables</span>
+    <span class="n">ct</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,])</span>
+    <span class="c1"># Compute the scaled forward probabilities</span>
+    <span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,]</span> <span class="o">=</span> <span class="n">ct</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,]</span> <span class="p">}</span>
+  <span class="c1"># Compute the last scaled backwards variable</span>
+  <span class="n">beta</span><span class="p">[</span><span class="n">nt</span><span class="p">,]</span> <span class="o">=</span> <span class="n">ct</span><span class="p">[</span><span class="n">nt</span><span class="p">]</span>
+
+  <span class="k">for</span><span class="p">(</span><span class="n">t</span> <span class="k">in</span> <span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">){</span>  
+    <span class="c1"># Use recursive structure of scaled backwards probabilities to calculate for each t</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">)</span>
+    <span class="n">beta</span><span class="p">[</span><span class="n">t</span><span class="p">,]</span> <span class="o">=</span> <span class="p">(</span><span class="no">A</span><span class="o">%*</span><span class="sx">%(B[t+1,]*beta[t+1,])</span><span class="p">)</span><span class="o">*</span><span class="n">ct</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="p">}</span>
+    
+  <span class="c1"># Compute the smoothing and filtering probabilities</span>
+  <span class="n">gamma</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">nrow</span> <span class="o">=</span> <span class="n">nt</span><span class="p">)</span> 
+  <span class="n">xi</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">dim</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">nstates</span><span class="p">))</span>
+  
+  <span class="k">for</span> <span class="p">(</span><span class="n">t</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nt</span><span class="p">){</span>
+    <span class="n">gamma</span><span class="p">[</span><span class="n">t</span><span class="p">,]</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">]</span> <span class="o">*</span> <span class="n">beta</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="p">]</span> <span class="o">/</span> <span class="n">ct</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="p">}</span>
+  
+  <span class="k">for</span> <span class="p">(</span><span class="n">t</span> <span class="k">in</span> <span class="mi">1</span><span class="p">:(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">)){</span>
+    <span class="k">for</span> <span class="p">(</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+      <span class="k">for</span> <span class="p">(</span> <span class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">)</span>
+        <span class="n">xi</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="no">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="no">B</span><span class="p">[</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">beta</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]}}</span>
+
+  <span class="c1"># Also calculate the log likelihood.</span>
+  <span class="n">loglikelis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">sum</span><span class="p">(</span><span class="n">log</span><span class="p">(</span><span class="n">ct</span><span class="p">))</span>
+  <span class="k">return</span><span class="p">(</span><span class="n">list</span><span class="p">(</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">xi</span> <span class="o">=</span> <span class="n">xi</span><span class="p">,</span> <span class="n">ct</span> <span class="o">=</span> <span class="n">ct</span><span class="p">,</span> <span class="n">loglikelis</span> <span class="o">=</span> <span class="n">loglikelis</span> <span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1"># Perform maximisation step for Gaussian components </span>
+<span class="c1"># Using the filtering and smoothing probabilities</span>
+<span class="n">emMax</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">xi</span> <span class="p">,</span> <span class="n">data</span> <span class="p">){</span>
+
+  <span class="c1"># Initialise our variables</span>
+  <span class="n">nt</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+  <span class="n">nstates</span> <span class="o">=</span> <span class="n">ncol</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+  
+  <span class="c1"># Maximise with respect to transition probabilities matrix</span>
+  <span class="n">tpm</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">nrow</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+  <span class="n">f</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span> <span class="n">nrow</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span> <span class="p">)</span>
+  
+  <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+      <span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">xi</span><span class="p">[,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">])</span> <span class="p">}}</span>
+  
+  <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">k</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+      <span class="n">tpm</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">]</span><span class="o">/</span> <span class="n">sum</span><span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">,])</span> <span class="p">}}</span>
+  
+  <span class="c1"># Maximise with respect to our state-dependent parameters</span>
+  <span class="n">sigmas</span> <span class="o">=</span> <span class="n">mus</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+  
+  <span class="k">for</span><span class="p">(</span><span class="n">j</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+    <span class="n">mus</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">gamma</span><span class="p">[,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">data</span><span class="p">)</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">gamma</span><span class="p">[,</span><span class="n">j</span><span class="p">])</span>
+    <span class="n">sigmas</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span>  <span class="n">sqrt</span><span class="p">(</span><span class="n">sum</span><span class="p">(</span><span class="n">gamma</span><span class="p">[,</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">data</span>  <span class="o">-</span> <span class="n">mus</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">^</span><span class="mi">2</span> <span class="p">)</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">gamma</span><span class="p">[,</span><span class="n">j</span><span class="p">]))</span>
+  <span class="p">}</span>
+  
+  <span class="n">densities</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">nrow</span> <span class="o">=</span> <span class="n">nt</span> <span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+  
+  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+    <span class="n">densities</span><span class="p">[,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnorm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">mus</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">sigmas</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+  <span class="p">}</span>
+  
+  <span class="c1"># Maximise with respect to our prior probabilities</span>
+  <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">=</span> <span class="n">gamma</span><span class="p">[</span><span class="mi">1</span><span class="p">,]</span>
+
+  <span class="k">return</span><span class="p">(</span><span class="n">list</span><span class="p">(</span><span class="n">tpm</span> <span class="o">=</span> <span class="n">tpm</span><span class="p">,</span> <span class="n">densities</span> <span class="o">=</span> <span class="n">densities</span><span class="p">,</span>
+              <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">=</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="p">,</span> <span class="n">mus</span> <span class="o">=</span> <span class="n">mus</span><span class="p">,</span> <span class="n">sigmas</span> <span class="o">=</span> <span class="n">sigmas</span> <span class="p">))</span>
+<span class="p">}</span>
+
+<span class="c1"># Perform the expectation maximisation step itself. </span>
+<span class="n">em</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nstates</span><span class="p">,</span> <span class="no">MAXITER</span> <span class="o">=</span> <span class="mi">100</span><span class="p">){</span>
+  
+  <span class="c1"># Initialise starting values for EM</span>
+  <span class="n">nt</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+  <span class="n">tpm</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">nstates</span><span class="p">,</span> <span class="n">nrow</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+  <span class="n">densities</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">nrow</span> <span class="o">=</span> <span class="n">nt</span> <span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+
+  <span class="c1"># Set up some initial values for our numerical solver</span>
+  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+    <span class="n">densities</span><span class="p">[,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dnorm</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">sd</span> <span class="o">=</span> <span class="n">sd</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+  <span class="p">}</span>
+
+  <span class="n">v</span> <span class="o">=</span> <span class="n">runif</span><span class="p">(</span><span class="n">nstates</span><span class="p">)</span>
+  <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="n">sum</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+  
+  <span class="c1"># Define our convergence criteria.</span>
+  <span class="no">EPS</span> <span class="o">=</span> <span class="mf">1e-10</span>
+  <span class="n">ll</span> <span class="o">=</span> <span class="mi">100</span>
+  <span class="n">its</span> <span class="o">=</span> <span class="mi">0</span>
+
+  <span class="c1"># Calculate our smoothing and filtering probabilities using forward backwards</span>
+  <span class="n">s</span> <span class="o">=</span> <span class="n">fb</span><span class="p">(</span><span class="n">tpm</span> <span class="o">=</span> <span class="n">tpm</span><span class="p">,</span> <span class="n">densities</span> <span class="o">=</span> <span class="n">densities</span><span class="p">,</span> 
+         <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">=</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+  <span class="n">t</span> <span class="o">=</span> <span class="n">emMax</span><span class="p">(</span><span class="n">s</span><span class="vg">$gamma</span><span class="p">,</span> <span class="n">s</span><span class="vg">$xi</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+  <span class="c1"># Hill climb with the maximisation step and forwards-backwards algorithm until convergence</span>
+  <span class="k">for</span> <span class="p">(</span><span class="no">ITER</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:MAXITER</span><span class="p">){</span>
+    <span class="n">its</span> <span class="o">=</span> <span class="no">ITER</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">fb</span><span class="p">(</span><span class="n">t</span><span class="vg">$tpm</span><span class="p">,</span> <span class="n">t</span><span class="vg">$densities</span><span class="p">,</span>
+             <span class="n">t</span><span class="vg">$prior</span><span class="p">.</span><span class="nf">probs</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">emMax</span><span class="p">(</span><span class="n">s</span><span class="vg">$gamma</span><span class="p">,</span> <span class="n">s</span><span class="vg">$xi</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">ll_new</span> <span class="o">=</span> <span class="n">s</span><span class="vg">$loglikelis</span>
+
+    <span class="k">if</span><span class="p">(</span> <span class="n">abs</span><span class="p">(</span><span class="n">ll_new</span> <span class="o">-</span> <span class="n">ll</span><span class="p">)</span> <span class="o">&lt;</span> <span class="no">EPS</span><span class="p">){</span>
+      <span class="n">s</span> <span class="o">&lt;-</span> <span class="n">paste</span><span class="p">(</span><span class="s2">"Converged in"</span><span class="p">,</span> <span class="no">ITER</span><span class="p">,</span> <span class="s2">"iterations."</span><span class="p">)</span>
+      <span class="n">message</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> 
+      <span class="k">break</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="n">ll</span> <span class="o">=</span> <span class="n">ll_new</span> <span class="p">}</span>
+  <span class="p">}</span>
+  
+  <span class="k">if</span><span class="p">(</span><span class="n">its</span> <span class="o">==</span> <span class="no">MAXITER</span><span class="p">){</span>
+    <span class="n">message</span><span class="p">(</span><span class="s2">"Model failed to converge in given iterations"</span><span class="p">)</span>
+  <span class="p">}</span>
+  
+  <span class="n">k</span> <span class="o">=</span> <span class="n">nstates</span><span class="o">*</span><span class="p">(</span><span class="n">nstates</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+  
+  <span class="n">aic</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">k</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">ll</span> 
+  <span class="n">bic</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">log</span><span class="p">(</span><span class="n">nt</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">ll</span>
+  <span class="n">metrics</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">aic</span><span class="p">,</span>  <span class="n">bic</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="n">k</span><span class="p">)</span>
+  
+  <span class="n">names</span><span class="p">(</span><span class="n">metrics</span><span class="p">)</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">"aic"</span><span class="p">,</span> <span class="s2">"bic"</span><span class="p">,</span> <span class="s2">"loglikelis"</span><span class="p">,</span> <span class="s2">"df"</span><span class="p">)</span>
+  <span class="k">return</span><span class="p">(</span><span class="n">list</span><span class="p">(</span> <span class="n">tpm</span> <span class="o">=</span> <span class="n">t</span><span class="vg">$tpm</span><span class="p">,</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">=</span> <span class="n">t</span><span class="vg">$prior</span><span class="p">.</span><span class="nf">probs</span><span class="p">,</span>
+               <span class="n">mus</span> <span class="o">=</span> <span class="n">t</span><span class="vg">$mus</span><span class="p">,</span> <span class="n">sigmas</span> <span class="o">=</span> <span class="n">t</span><span class="vg">$sigmas</span><span class="p">,</span> <span class="n">densities</span> <span class="o">=</span> <span class="n">t</span><span class="vg">$densities</span><span class="p">,</span>
+               <span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span><span class="p">))</span>
+  <span class="p">}</span>
+
+<span class="c1"># Implement the Viterbi algorithm described in Section 2.4</span>
+<span class="n">viterbi</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">tpm</span><span class="p">,</span> <span class="n">densities</span><span class="p">,</span> <span class="n">prior</span><span class="p">.</span><span class="nf">probs</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="no">A</span> <span class="o">=</span> <span class="n">tpm</span>
+  <span class="no">B</span> <span class="o">=</span> <span class="n">densities</span>
+  <span class="n">nstates</span> <span class="o">=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">tpm</span><span class="p">)</span>
+  <span class="n">nt</span> <span class="o">=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">densities</span><span class="p">)</span>
+  
+  <span class="c1"># Initialise variables</span>
+  <span class="n">delta</span> <span class="o">=</span> <span class="n">psi</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">nrow</span> <span class="o">=</span> <span class="n">nt</span><span class="p">,</span> <span class="n">ncol</span> <span class="o">=</span> <span class="n">nstates</span><span class="p">)</span>
+  
+  <span class="c1"># Set initial condition</span>
+  <span class="n">delta</span><span class="p">[</span><span class="mi">1</span><span class="p">,]</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="n">prior</span><span class="p">.</span><span class="nf">probs</span> <span class="o">*</span> <span class="no">B</span><span class="p">[</span><span class="mi">1</span><span class="p">,])</span>
+  <span class="n">psi</span><span class="p">[</span><span class="mi">1</span><span class="p">,]</span> <span class="o">=</span> <span class="mi">0</span>
+  
+  <span class="c1"># Loop:</span>
+  <span class="k">for</span><span class="p">(</span> <span class="n">t</span> <span class="k">in</span> <span class="mi">2</span><span class="ss">:nt</span> <span class="p">){</span>
+    <span class="k">for</span><span class="p">(</span> <span class="n">i</span> <span class="k">in</span> <span class="mi">1</span><span class="ss">:nstates</span><span class="p">){</span>
+      <span class="n">delta</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">log</span><span class="p">(</span><span class="no">B</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="n">max</span><span class="p">(</span> <span class="n">delta</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">,]</span> <span class="o">+</span> <span class="n">log</span><span class="p">(</span><span class="no">A</span><span class="p">[,</span><span class="n">i</span><span class="p">]))</span>
+      <span class="n">psi</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">which</span><span class="p">.</span><span class="nf">max</span><span class="p">(</span> <span class="n">delta</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">,]</span> <span class="o">+</span> <span class="n">log</span><span class="p">(</span><span class="no">A</span><span class="p">[,</span><span class="n">i</span><span class="p">])</span> <span class="p">)</span>
+    <span class="p">}}</span>
+  
+  <span class="n">st_global</span> <span class="o">=</span> <span class="n">vector</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="n">nt</span><span class="p">)</span>
+  <span class="n">st_global</span><span class="p">[</span><span class="n">nt</span><span class="p">]</span> <span class="o">=</span> <span class="n">which</span><span class="p">.</span><span class="nf">max</span><span class="p">(</span><span class="n">delta</span><span class="p">[</span><span class="n">nt</span><span class="p">,])</span>
+  
+  <span class="c1"># Backwards pass</span>
+  <span class="k">for</span> <span class="p">(</span><span class="n">t</span> <span class="k">in</span> <span class="p">(</span><span class="n">nt</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="mi">1</span><span class="p">){</span>
+    <span class="n">st_global</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">psi</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">st_global</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span>
+  <span class="p">}</span> 
+  <span class="k">return</span><span class="p">(</span><span class="n">st_global</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<h3 id="references">References</h3>
+
+<p>Becker, M., (2011) <em>Why do dogs pant?</em> Available at: 
+<code class="language-plaintext highlighter-rouge">https://www.vetstreet.com/dr-marty-becker/dog-behavior-decoded-why-do-dogs-pant</code>
+(Accessed 10/12/23)</p>
+
+<p>Chatterjee, S., Thakur, R. S., Yadav, R. M., Gupta, L., Raghuvanshi, D. K., ‘Review of noise removal techniques in ECG signals,’ <em>IET Signal Processing</em>, 14(9), 569-590.</p>
+
+<p>DeRuiter, S. L., Langrock, R., Skirbutas, T., Goldbogen, J.A., Calambokidis, J. Friedlaender, A. S., Southall, B. L., (2017) ‘A Multivariate Mixed Hidden Markov Model for Blue Whale Behaviour and Responses to Sound Exposure,’ <em>The Annals of Applied Statistics</em>, 11(1), 362-392.</p>
+
+<p>Fletcher, R. (1987). <em>Practical methods of Optimisation</em>, 2nd Ed. Wiley: NY</p>
+
+<p>Gordon, L. (2017). <em>Hyperthermia and Heatstroke in the Working Canine</em> (pp. 1–15). USAR Veterinary Group.</p>
+
+<p>Jin, Y., Qin, C., Liu, J., Li, Z., Liu, C., ‘A novel deep wavelet convolutional neural network for actual ECG signal denoising’ <em>Biomedical Signal Processing and Control</em>, 87(A), 105480  <code class="language-plaintext highlighter-rouge">doi.org/10.1016/j.bspc.2023.105480</code></p>
+
+<p>Ligges, U., Short, T., Kienzle, P., Schnackenberg, S., Billinghurst, D., Borchers, H-W., Carezia, A., Dupuis P., Eaton, J. W., Farhi, E., Habel, K., Hornik, K., Krey, S., Lash, B., Leisch, F., Mersmann, O., Neis, P., Ruohio, J., Smith III, J. O., Stewart, D., Weingessel, A. (2023) signal: Signal Processing,  R package, current version available from CRAN</p>
+
+<p>Mastrantonio, G., Grazian, C., Mancinelli, S., &amp; Bibbona, E. (2019). ‘New formulation of the logistic-Gaussian process to analyze trajectory tracking data,’ <em>The Annals of Applied Statistics</em>, 13(4), 2483-2508.</p>
+
+<p>O’Brien, C., Tharion, W. J., Karis, A. J., &amp; Sullivan, H. M. (2020). ‘Predicting military working dog core temperature during exertional heat strain: Validation of a Canine Thermal Model,’ <em>Journal of Thermal Biology</em>, 90, 102603. <code class="language-plaintext highlighter-rouge">doi:10.1016/j.jtherbio.2020.102603</code></p>
+
+<p>Pohle, J., Langrock, R., van Beest, F. M., &amp; Schmidt N. M., (2017) Selecting the Number of States in Hidden Markov Models: Pragmatic Solutions Illustrated Using Animal Movement. <em>Journal of Agricultural, Biological, and Environmental Statistics</em>, 22(3) 270-293.</p>
+
+<p>R Core Team (2021). <code class="language-plaintext highlighter-rouge">R</code>: A language and environment for statistical computing. <code class="language-plaintext highlighter-rouge">R</code> Foundation for Statistical Computing, Vienna, Austria. <code class="language-plaintext highlighter-rouge">https://www.R-project.org/.</code></p>
+
+<p>Roebuck, P., (2014) rwt: Rice Wavelet Toolbox Wrapper., R package, archived: accessible from <code class="language-plaintext highlighter-rouge">https://cran-archive.r-project.org/web/checks/2023/2023-01-09_check_results_rwt.html</code></p>
+
+<p>Starling M., Jayarathna, T., Grazian, C., Contractor, S., Flower, B., Lomax, S., Breen, P., Sisson, S., Jay, O., Leong, P., Clark, C., McGreevy, P., Broderik, C., (2022) ‘Optimising Australian Defence Force military working dog performance through next generation monitoring systems,’ <em>Defence Innovation Network</em></p>
+
+<p>Tan. R., Xing. G., Liu, X.,  Yao J., &amp; Yuan,  Z., (2010) ‘Adaptive Calibration for Fusion-based Wireless Sensor Networks,. <em>Proceedings IEEE INFOCOM</em>, pp. 1-9,  <code class="language-plaintext highlighter-rouge">doi:10.1109/INFCOM.2010.5462036.</code></p>
+
+<p>(Capt.) Thomas, K. (2022) ‘Military police welcome new hounds and handlers,’  <em>Australian Government - Department of Defence</em>. Available at: 
+<code class="language-plaintext highlighter-rouge">https://www.defence.gov.au/news-events/news/2022-10-21/military-police-welcome-new-hounds-and-handlers</code>
+(Accessed 20/02/24)</p>
+
+<p>Visser I. &amp; Speekenbrink M. (2022) Mixture and Hidden Markov Models with <code class="language-plaintext highlighter-rouge">R</code>. Springer: Switzerland</p>
+
+<p>Visser I, Speekenbrink M (2010) depmixS4: An R-package for hidden Markov models. J Stat Softw 36(7):1–21. <code class="language-plaintext highlighter-rouge">http://www.jstatsoft.org/v36/i07/</code>, R package, current version available from CRAN</p>
+
+<p>Zucchini W., MacDonald I. L., Langrock, R., (2016) Hidden Markov Models 
+for Time Series. CRC Press: FL</p>
+
+
+
+		</article>
+		<footer>
+	<small>Built with tools by <a href="http://taniarascia.com">Tania Rascia</small>
+</footer>
+
+	</main>
+</body>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Sampling Approaches to Graph Clustering and Evaluation on the StringDB PPI</title>
+
+	<link rel="stylesheet" href="/css/main.css">
+	<link rel="canonical" href="http://localhost:4000/research/network-summ">
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700,800,600' rel='stylesheet' type='text/css'>
+	<link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
+</head> 
+
+<!-- for mathjax support -->
+<!-- 
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		TeX: {
+			equationNumbers: { autoNumber: "AMS" },
+			tagSide: "right"
+		},
+		tex2jax: {
+			inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+			displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+			processEscapes: true
+		}
+		});
+		MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+		MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+			clearTag() {
+			if (!this.global.notags) {
+				this.super(arguments).clearTag.call(this);
+			}
+			}
+		});
+		});
+	</script>
+	<script type="text/javascript" charset="utf-8"
+		src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+	</script>
+ -->
+
+
+<!-- for mathjax support -->
+
+<style>
+.scrollable-equation {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  white-space: nowrap; /* Prevent line breaks within the container */
+  max-width: 100%; /* Ensure the container doesn't exceed the width of the page */
+}
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: { autoNumber: "AMS" },
+      tagSide: "right"
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+      processEscapes: true
+    }
+  });
+  MathJax.Hub.Register.StartupHook("TeX AMSmath Ready", function () {
+    MathJax.InputJax.TeX.Stack.Item.AMSarray.Augment({
+      clearTag() {
+        if (!this.global.notags) {
+          this.super(arguments).clearTag.call(this);
+        }
+      }
+    });
+  });
+</script>
+<script type="text/javascript" charset="utf-8"
+  src="https://cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+
+
+
+
+<style>
+	.notice {
+	  border: 2px solid #262626;
+	  border-radius: 8px;
+	  padding: 15px;
+	  margin: 10px 0;
+	  background-color: #E7EDF4;
+	  color: #333;
+	}
+	
+	.notice h4 {
+	  margin-top: 0;
+	  color: #425469;
+	}
+	
+	.notice p {
+		margin-top: -1em;
+	  margin-bottom: 0;
+	}
+</style>
+
+<body>
+	<aside>
+	<div class="container">
+		<nav>
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/education">Education</a></li>
+				<li><a href="/research">ML Projects</a></li>
+				<li><a href="/blog">FSAE Blog</a></li>
+			</ul>
+			</li>
+			</ul>
+		</nav>
+	</div>
+</aside>
+
+
+<header>
+	<h1><a href=""></a></h1>
+</header>
+ 
+	<main>
+		<article>
+			<h2>Sampling Approaches to Graph Clustering and Evaluation on the StringDB PPI</h2>
+   
+    <h3 id="supervised-by-prof-georg-gottwald--dec-2024">Supervised by Prof Georg Gottwald ~ Dec 2024</h3>
+
+<p>This is a short summary and introduction to the work. For the full project, see <a href="/research/network-full">here</a>.</p>
+
+<h3 id="table-of-contents">Table of Contents</h3>
+
+<ol>
+  <li><a href="#background">Background</a>
+    <ol>
+      <li><a href="#experimental-setup">Experimental Setup</a></li>
+      <li><a href="#hidden-markov-models">Hidden Markov Models</a></li>
+    </ol>
+  </li>
+  <li><a href="#methodology">Methodology</a></li>
+  <li><a href="#our-findings">Our Findings</a></li>
+</ol>
+
+<h3 id="background">Background</h3>
+
+<p>As our best friends, we rely on dogs for some very important and strenuous tasks. For example, we have trained dogs to herd sheep and cattle, perform search and rescue operations, and even help in the military.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/slide1.png" alt="dogs in different circumstances" style="width:100%" />
+  <figcaption>Figure 1: Some examples of how dogs help us out.</figcaption>
+</figure>
+
+<p>Especially in Australia however, where the climate is very hot, these tasks may put the dogs at a high risk of heat stress. This is a challenge for dog handlers, because working dogs, like Kelpies, are bred to be highly resilient and hardworking, so they do not exhibit warning signs until it becomes dangerous. Moreover, different dogs, even of the same breed, and under the same environmental conditions, may have very different responses. Of course, dogs may be working out of the sight of their handlers as well.</p>
+
+<p>These factors make it very hard for handlers to judge a dog’s wellbeing by qualitative means. For this reason, it is useful to be able to detect the signs of overtemperature stress using a quantitative approach.</p>
+
+<h4 id="experimental-setup">Experimental Setup</h4>
+
+<p>In order to test any machine learning algorithm however, we need some data. To collect it, we fitted six kelpies with a harness recording their ECG patterns, respiratory excursions, acceleration and temperature at each dog’s back and belly. Each dog also ingested a pill that measured their internal body temperature.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/slide3.png" alt="pills and harness" style="width:100%" />
+  <figcaption>Figure 2: Left: kelpies wearing sensor harness, right: temperature sensing pill.</figcaption>
+</figure>
+
+<p>The dogs where then given a set of activities to perform throughout the day. The graphs below show the data collected from the harness of the dog Bobby,</p>
+
+<figure>
+  <img src="/_research/hmm-pics/datamv2.png" alt="harness data" style="width:100%" />
+  <figcaption>Figure 3: Harness data from Bobby.</figcaption>
+</figure>
+
+<p>and also the data collected from Bobby’s temperature sensing pill.</p>
+
+<figure>
+  <img src="/_research/hmm-pics/datauv.png" alt="pill data" style="width:100%" />
+  <figcaption>Figure 4: Pill data from Bobby.</figcaption>
+</figure>
+
+<p>From this data then, we want to be able to infer the behavioural stress of the dog, and in particular, whether the dog is in a high activity state and hence at a heightened risk of heat stress.</p>
+
+<h4 id="hidden-markov-models">Hidden Markov Models</h4>
+
+<p>First, we introduce some terminology. Represent the current behavioural state of the dog at time $t$ out of $N$ possible states by the random variable $S_t\in {1,\dotsb, N}$.</p>
+
+<p>Then we say that the state sequence $S_{1:T} = (S_1,\dotsb,S_T)$ satisfies the <em>Markov Property</em> if</p>
+
+\[P(S_t\mid S_{1:(t-1)}) = P(S_t \mid S_{t-1})\,.\]
+
+<p>We will associate with the state sequence $S_{1:T}$ with an <em>initial probabilites vector</em></p>
+
+\[\boldsymbol{\theta}_{\text{init}} = \big [ P(S_1 = 1), P(S_1=2), \dots, P(S_1=N)\big ] \,.\]
+
+<p>which encodes for the initial behavioural state of the dog, and a <em>transition probabilities matrix</em>: a matrix $\boldsymbol{\theta}_{\text{trans}_{N\times N}}$ such that</p>
+
+<p>\(\boldsymbol{\theta}_{\text{trans}_{i,j}} = P(S_t = i \mid S_{t-1}= j)\)\,.</p>
+
+<p>The transition probabilities matrix encodes for how the dog moves between different behavioural states.</p>
+
+<p>Now, represent the observation at time $t$ by the random variable $X_t$, and associate with $X_{1:T}=(X_1,\dots,X_T)$ some distribution parameters $\boldsymbol{\theta}_{\text{obs}}$. For example, we might say $X_1\sim\mathrm{Normal}(0,1)$ and $X_2\sim \mathrm{Normal}(2,3)$, so these pairs of mean and variances would be stored in $\boldsymbol{\theta}_{\text{obs}}$.</p>
+
+<p>Note that $X_t$ could be a scalar or a random vector as well.</p>
+
+
+
+		</article>
+		<footer>
+	<small>Built with tools by <a href="http://taniarascia.com">Tania Rascia</small>
+</footer>
+
+	</main>
+</body>
+
+</html>
