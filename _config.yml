@@ -1,13 +1,13 @@
 # Site Settings
-title: Thomas Zheng - Personal Portfolio
+title: Wayne Pooley - Personal Portfolio
 email: email@email.com
 description: >
   My website
 # baseurl: '/startjekyll'
 baseurl:
-url: 'https://thomas-hy-zheng.github.io'
+url: 'https://wayne-pooley.github.io'
 twitter_username: 
-github_username:  thomas-hy-zheng
+github_username:  wapo6604
 # Build Settings
 sass:
   sass_dir: _sass
