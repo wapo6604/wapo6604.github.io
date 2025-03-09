@@ -1,27 +1,27 @@
 ---
 layout: page
-title: Machine Learning Projects
+title: Projects
 permalink: /research/
 usemathjax: true
 ---
-Here are some interesting research projects in machine learning and statistics.
+Here are some research projects and articles I have done in physics and mathematics.
 
-### Consistency Results in Estimating the Number of Clusters
-*Supervised by A/Prof Clara Grazian*.  
- We prove a new result on the consistency of Pitman-Yor models in estimating the number of clusters in a mixture model. We show a positive consistency result for the case of a Uniform prior on the concentration parameter.  
-[Summary]({{ site.baseurl }}/research/pitman-summ) \| [Full Report]({{ site.baseurl }}/research/pitman-full)
+### Simulating Dark Matter in the Galactic Halo
+*Supervised by Dr Ciaran O'Hare*.  
+ We simulate the galactic halo and an idealized dark matter distribution to compare to real detector data.  
+[Summary]({{ site.baseurl }}/research/pitman-summ) 
 
-### Sampling Approaches to Graph Clustering and Evaluation on the StringDB PPI
-*Supervised by Prof Georg Gottwald*.  
- We explore a new approach to clustering networks by sampling from a distribution of possible modularity resolutions, computing the Louvain partition for each resolution, and then taking a consensus result. We then explore a way of evaluating our clusters with stochastic block models.  
+### Simulating Anyons in a Lattice via Wannier Functions
+*Supervised by Dr Abhijeet Laxman Alase*.  
+ We model anyons in a bravais lattice using a Hamiltonian described by Kitaev. We use a mapping that allows us to express that Hamiltonian using Wannier functions.   
 [Full Report]({{ site.baseurl }}/research/network-full)
 
-### Hidden Markov Models for Analysing Stress Levels in Working Dogs
-*Supervised by A/Prof Clara Grazian, funded by Australian Mathematical Sciences Institute.*  
- We explore novel methods for improving the analysis of multivariate hidden Markov models on time series with both fast and slow dynamics. We also explore data-cleaning methods for very noisy biological sensor data.  
-[Summary]({{ site.baseurl }}/research/hmm-summ) \| [Full Report]({{ site.baseurl }}/research/hmm-full)
+### Quantum Probability Measured
+*Published by The University of Sydney's Physics Society Journal (Jeremy Issue 2 of 2025)*  
+ We explore how measure theory informs quantum mechanics' fundamental formalisms. We look at how notions of probability and expectated value in quantum systems originate with functional analysis, measure and probability theory via the 'Projection-Valued Measure'.
+[Article]({{ site.baseurl }}/_research/Jeremy_Article___Wayne_Pooley.pdf)
 
-### Bayesian Model Selection for Logistic Regression via Variational Bayesian Interference
+<!-- ### Bayesian Model Selection for Logistic Regression via Variational Bayesian Interference
 *Supervised by A/Prof John Ormerod.*  
 We develop a novel method of performing simultaneous model selection and regression using the reverse collapsed variational Bayesian method. Our algorithm outperforms $k$-NN and random forests in cross-validation MSE performance, and is available as an <code>R</code> package.   
-[Summary]({{ site.baseurl }}/research/vb-summ) \| [Full Report]({{ site.baseurl }}/research/vb-full) \| [Code](https://github.com/thomas-hy-zheng/cvbdl).
+[Summary]({{ site.baseurl }}/research/vb-summ) \| [Full Report]({{ site.baseurl }}/research/vb-full) \| [Code](https://github.com/thomas-hy-zheng/cvbdl). -->
