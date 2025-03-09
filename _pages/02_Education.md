@@ -6,12 +6,12 @@ permalink: /education/
 
 ### Degree:
 ```
-Bachelor of Science with Honours (Mathematics and Statistics)
-The University of Sydney (2022 - 2025)
-Overall Grade (WAM): 97/100
+Bachelor of Science with Honours (Mathematics and Physics)
+The University of Sydney (2022 - 2026)
+
 ```
 
-### Awards:
+<!-- ### Awards:
 I have won a few prizes and scholarships for performance in higher mathematics and university study, including
 ```
 2024 AMSI Research Scholarship, funding for a summer research project
@@ -28,15 +28,45 @@ Tim Brown Prize, for highest average mark in statistics in cohort
 
 Citadel Securities Prize, for highest average mark in data science in cohort 
 (July 2023)
-```
+``` -->
 
 ### Courses:
-Here are a few nice course marks I have attained.
+Here are the mathematics and physics units I have attended.
+
+Mathematics:
 ```
-MATH3969: Measure Theory and Fourier Analysis (Advanced)         100/100
-MATH3961: Metric Spaces (Advanced)                               100/100
-MATH3978: Partial Differential Equations and Waves (Advanced)    100/100
-STAT3925: Time Series Analysis (Advanced)                         99/100
-STAT3925: Stochastic Processes (Advanced)                         98/100
-MATH2923: Real and Complex Analysis (Advanced)                    99/100
+MATH3969    Measure Theory and Fourier Analysis (Advanced)         
+MATH3968    Differential Geometry (Advanced)
+MATH3962    Rings, Fields, Galois Theory (Advanced)
+
+MATH2023    Analysis 
+MATH2022    Linear and Abstract Algebra
+MATH2021    Vector Calculus and Differential Equations
+
+MATH1023    Multivariable Calculus and Modelling
+MATH1004    Discrete Mathematics
+MATH1021    Calculus of One Variable
+MATH1001    Linear Algebra
+
 ```
+
+Physics:
+```
+PHYS3888    Physics Interdisciplinary Project
+PHYS3936    Condensed Matter and Particle Phys (Adv)
+PHYS3935    Electrodynamics and Optics (Advanced)
+PHYS3934    Quantum, Statistical and Comp Phys (Adv)
+
+PHYS2913    Astrophysics and Relativity (Advanced)
+PHYS2912    Physics 2B (Advanced)
+PHYS2911    Physics 2A (Advanced)
+
+PHYS1003    Physics 1 (Technological)
+PHYS1001    Physics 1 (Regular)
+
+OLET1638    Astronomy: from Stars to Black Holes
+OLET1636    Astronomy: from Earth to Exoplanets
+OLET1640    Astronomy: from Big Bang to Darkness
+```
+
+Not for credit, I have sat in on courses at AMSI summer school (Algebraic Knot Theory) and done reading courses at USYD.
