@@ -35,18 +35,18 @@ Here are the mathematics and physics units I have attended.
 
 Mathematics:
 ```
-MATH3969: Measure Theory and Fourier Analysis (Advanced)         
-MATH3968: Differential Geometry (Advanced)
-MATH3962: Rings, Fields, Galois Theory (Advanced)
+MATH3969    Measure Theory and Fourier Analysis (Advanced)         
+MATH3968    Differential Geometry (Advanced)
+MATH3962    Rings, Fields, Galois Theory (Advanced)
 
-MATH2023: Analysis 
-MATH2022: Linear and Abstract Algebra
-MATH2021: Vector Calculus and Differential Equations
+MATH2023    Analysis 
+MATH2022    Linear and Abstract Algebra
+MATH2021    Vector Calculus and Differential Equations
 
-MATH1023: Multivariable Calculus and Modelling
-MATH1004: Discrete Mathematics
-MATH1021: Calculus of One Variable
-MATH1001: Linear Algebra
+MATH1023    Multivariable Calculus and Modelling
+MATH1004    Discrete Mathematics
+MATH1021    Calculus of One Variable
+MATH1001    Linear Algebra
 
 ```
 
@@ -69,4 +69,4 @@ OLET1636	Astronomy: from Earth to Exoplanets
 OLET1640	Astronomy: from Big Bang to Darkness
 ```
 
-Not for credit, I have sat in on courses and done reading courses in AMSI summer school (Algebraic Knot Theory).
+Not for credit, I have sat in on courses at AMSI summer school (Algebraic Knot Theory) and done reading courses at USYD.
