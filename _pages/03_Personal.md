@@ -31,4 +31,6 @@ Physics Society - Jeremy Magazine Author
 
 Here are some of my paintings I have made in my free time! 😀
 
-[insert image in this area]
+<div style="text-align:center">
+  <img src="../pictures/ships.jpeg" alt="ships" title="My recreation of 'Ships in Distress off a Rocky Coast'" style="width:560px; height:auto;">
+</div>
