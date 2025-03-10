@@ -17,8 +17,7 @@ I have had involvement in societies in The University of Sydney. Here are some o
 Sydney Uni's Astronomy Society (SUAS): Events Coordinator 
  - I organized events like stargazing evenings and camping trips to the Blue Mountains for night viewing.
 
-<!-- ![suas-profile](../pictures/suas.jpeg "SUAS Profile from 2023-2024")
- -->
+
 <div style="text-align:center">
   <img src="../pictures/suas.jpeg" alt="suas-profile" title="SUAS Profile from 2023-2024" style="width:350px; height:auto;">
 </div>

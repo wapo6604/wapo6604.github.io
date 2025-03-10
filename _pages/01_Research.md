@@ -9,13 +9,13 @@ Here are some research projects and articles I have done in physics and mathemat
 ### Simulating Dark Matter in the Galactic Halo
 *Supervised by Dr Ciaran O'Hare*.  
  We simulate the galactic halo and an idealized dark matter distribution to compare to real detector data.  
-[Summary]({{ site.baseurl }}/research/pitman-summ) 
-
+<!-- [Summary]({{ site.baseurl }}/research/pitman-summ) 
+ -->
 ### Simulating Anyons in a Lattice via Wannier Functions
 *Supervised by Dr Abhijeet Laxman Alase*.  
  We model anyons in a bravais lattice using a Hamiltonian described by Kitaev. We use a mapping that allows us to express that Hamiltonian using Wannier functions.   
-[Full Report]({{ site.baseurl }}/research/network-full)
-
+<!-- [Full Report]({{ site.baseurl }}/research/network-full)
+ -->
 ### Quantum Probability Measured
 *Published by The University of Sydney's Physics Society Journal (Jeremy Issue 2 of 2025)*  
  We explore how measure theory informs quantum mechanics' fundamental formalisms. We look at how notions of probability and expectated value in quantum systems originate with functional analysis, measure and probability theory via the 'Projection-Valued Measure'.
