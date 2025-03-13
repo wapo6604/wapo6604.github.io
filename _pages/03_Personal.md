@@ -17,8 +17,7 @@ I have had involvement in societies in The University of Sydney. Here are some o
 Sydney Uni's Astronomy Society (SUAS): Events Coordinator 
  - I organized events like stargazing evenings and camping trips to the Blue Mountains for night viewing.
 
-<!-- ![suas-profile](../pictures/suas.jpeg "SUAS Profile from 2023-2024")
- -->
+
 <div style="text-align:center">
   <img src="../pictures/suas.jpeg" alt="suas-profile" title="SUAS Profile from 2023-2024" style="width:350px; height:auto;">
 </div>
@@ -32,4 +31,12 @@ Physics Society - Jeremy Magazine Author
 
 Here are some of my paintings I have made in my free time! 😀
 
-[insert image in this area]
+<div style="text-align:center">
+  <img src="../pictures/ships.jpeg" alt="ships" title="My recreation of 'Ships in Distress off a Rocky Coast'" style="width:560px; height:auto;">
+</div>
+
+
+
+<div style="text-align:center">
+  <img src="../pictures/berserk.jpeg" alt="skull" title="Skull Knight'" style="width:450px; height:auto;">
+</div>
