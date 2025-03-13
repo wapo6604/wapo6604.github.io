@@ -38,5 +38,5 @@ Here are some of my paintings I have made in my free time! 😀
 
 
 <div style="text-align:center">
-  <img src="../pictures/berserk.jpeg" alt="skull" title="Skull Knight'" style="width:450px; height:auto;">
+  <img src="../pictures/berserk.jpeg" alt="skull" title="Skull Knight" style="width:450px; height:auto;">
 </div>
