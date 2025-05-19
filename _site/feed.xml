@@ -6,13 +6,8 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-<<<<<<< HEAD
-    <pubDate>Mon, 10 Mar 2025 19:00:54 +1100</pubDate>
-    <lastBuildDate>Mon, 10 Mar 2025 19:00:54 +1100</lastBuildDate>
-=======
-    <pubDate>Thu, 13 Mar 2025 02:41:44 -0400</pubDate>
-    <lastBuildDate>Thu, 13 Mar 2025 02:41:44 -0400</lastBuildDate>
->>>>>>> main
+    <pubDate>Mon, 19 May 2025 17:07:42 +1000</pubDate>
+    <lastBuildDate>Mon, 19 May 2025 17:07:42 +1000</lastBuildDate>
     <generator>Jekyll v3.10.0</generator>
     
       <item>
@@ -32,9 +27,9 @@
 &lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://github.com/jekyll/jekyll-help&quot;&gt;Jekyll’s dedicated Help repository&lt;/a&gt;.&lt;/p&gt;
 
 </description>
-        <pubDate>Sun, 29 Nov 2015 19:10:45 -0500</pubDate>
-        <link>http://localhost:4000/jekyll/update/2015/11/29/galvanic-isolation.html</link>
-        <guid isPermaLink="true">http://localhost:4000/jekyll/update/2015/11/29/galvanic-isolation.html</guid>
+        <pubDate>Mon, 30 Nov 2015 11:10:45 +1100</pubDate>
+        <link>http://localhost:4000/jekyll/update/2015/11/30/galvanic-isolation.html</link>
+        <guid isPermaLink="true">http://localhost:4000/jekyll/update/2015/11/30/galvanic-isolation.html</guid>
         
         
         <category>jekyll</category>
@@ -60,9 +55,9 @@
 &lt;p&gt;Check out the &lt;a href=&quot;http://jekyllrb.com&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://github.com/jekyll/jekyll-help&quot;&gt;Jekyll’s dedicated Help repository&lt;/a&gt;.&lt;/p&gt;
 
 </description>
-        <pubDate>Sun, 29 Nov 2015 19:10:45 -0500</pubDate>
-        <link>http://localhost:4000/jekyll/update/2015/11/29/precharge.html</link>
-        <guid isPermaLink="true">http://localhost:4000/jekyll/update/2015/11/29/precharge.html</guid>
+        <pubDate>Mon, 30 Nov 2015 11:10:45 +1100</pubDate>
+        <link>http://localhost:4000/jekyll/update/2015/11/30/precharge.html</link>
+        <guid isPermaLink="true">http://localhost:4000/jekyll/update/2015/11/30/precharge.html</guid>
         
         
         <category>jekyll</category>
