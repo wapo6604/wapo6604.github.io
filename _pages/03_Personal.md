@@ -14,6 +14,11 @@ Here is my [Goodreads](https://www.goodreads.com/user/show/109554090-wayne). Let
 
 I have had involvement in societies in The University of Sydney. Here are some of the details of my involvement:
 
+
+Physics Society - Jeremy Magazine Author
+- I have written articles for the Jeremy Magazine Issue 2. Feel free to check the articles out on my <a href="https://wapo6604.github.io/research/">Projects</a>  page!
+
+
 Sydney Uni's Astronomy Society (SUAS): Events Coordinator 
  - I organized events like stargazing evenings and camping trips to the Blue Mountains for night viewing.
 
@@ -23,8 +28,6 @@ Sydney Uni's Astronomy Society (SUAS): Events Coordinator
 </div>
 
 
-Physics Society - Jeremy Magazine Author
-- I have written articles for the Jeremy Magazine Issue 2. Feel free to check the articles out on my <a href="{{ 'research' | prepend: site.baseurl }}">Projects</a>  page!
 
 
 ### Art:
