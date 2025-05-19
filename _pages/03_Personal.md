@@ -24,7 +24,8 @@ Sydney Uni's Astronomy Society (SUAS): Events Coordinator
 
 
 Physics Society - Jeremy Magazine Author
-- I have written articles for the Jeremy Magazine Issue 2. Feel free to check the articles out on my <a href="{{ 'research' | prepend: site.baseurl }}">Projects</a>  page!
+- I have written articles for the Jeremy Magazine Issue 2. Feel free to check the articles out on my<a href="https://wapo6604.github.io/research/">Projects</a>
+  page!
 
 
 ### Art:
