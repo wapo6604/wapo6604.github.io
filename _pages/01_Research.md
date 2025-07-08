@@ -22,12 +22,12 @@ Here are some research projects and articles I have done in physics and mathemat
 ### Simulating Anyons in a Lattice via Wannier Functions (2025)
 *Supervised by Dr Abhijeet Laxman Alase*.  
  We model anyons in a bravais lattice using a Hamiltonian described by Kitaev. We use a mapping that allows us to express that Hamiltonian using Wannier functions.   
-[Full Report]({{ site.baseurl }}/research/network-full)
+<!-- [Full Report]({{ site.baseurl }}/research/network-full) -->
 
 ### Simulating Dark Matter in the Galactic Halo (2024)
 *Supervised by Dr Ciaran O'Hare*.  
  We simulate the galactic halo and an idealized dark matter distribution to compare to real detector data.  
-[Summary]({{ site.baseurl }}/research/pitman-summ) 
+<!-- [Summary]({{ site.baseurl }}/research/pitman-summ)  -->
 
 <!-- ### Bayesian Model Selection for Logistic Regression via Variational Bayesian Interference
 *Supervised by A/Prof John Ormerod.*  
