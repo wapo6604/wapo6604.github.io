@@ -21,6 +21,11 @@ Here are some research projects and articles I have done in physics and mathemat
  We explore how measure theory informs quantum mechanics' fundamental formalisms. We look at how notions of probability and expectated value in quantum systems originate with functional analysis, measure and probability theory via the 'Projection-Valued Measure'.
 [Article]({{ site.baseurl }}/_research/Jeremy_Article___Wayne_Pooley.pdf)
 
+### Spinors Part 1 and 2
+*Published by The University of Sydney's Physics Society Journal (Jeremy Issue 3 and 4 of 2025)*  
+ In a two-part article over two issues, Richard Nicotra and I set out to explain the mathematical underpinnings of the Bloch Sphere and the Hopf Fibration. In Spinors Part 1: Bloch Sphere and the Hopf Fibration, we explain the origin and formalism of the Bloch sphere using group theory, M\"obius transformations, and fiber bundles. In Spinors Part 2: Rotations, M\"obius Transformations, and SU(2), we go into more depth with some of the M\"obius transformations that deal with rotations and how they relate to some of the group actions on spinors. 
+[Article 1]({{ site.baseurl }}/_research/Jeremy_Article_Issue_3_2025___Wayne_Pooley.pdf) \| [Article 2]({{ site.baseurl }}/_research/Jeremy_Article_Issue_3_2025___Wayne_Pooley.pdf)
+
 <!-- ### Bayesian Model Selection for Logistic Regression via Variational Bayesian Interference
 *Supervised by A/Prof John Ormerod.*  
 We develop a novel method of performing simultaneous model selection and regression using the reverse collapsed variational Bayesian method. Our algorithm outperforms $k$-NN and random forests in cross-validation MSE performance, and is available as an <code>R</code> package.   
