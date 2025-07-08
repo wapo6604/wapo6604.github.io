@@ -30,8 +30,8 @@ Citadel Securities Prize, for highest average mark in data science in cohort
 (July 2023)
 ``` -->
 
-### Courses:
-Here are the mathematics and physics units I have attended.
+### Undergraduate Courses:
+Here are the mathematics and physics units I have completed in my Bachelors of Science (Major Maths/Physics).
 
 Mathematics:
 ```
@@ -67,6 +67,16 @@ PHYS1001    Physics 1 (Regular)
 OLET1638    Astronomy: from Stars to Black Holes
 OLET1636    Astronomy: from Earth to Exoplanets
 OLET1640    Astronomy: from Big Bang to Darkness
+
+```
+
+
+### Honours Courses:
+Here are the mathematics units I am doing/have completed in my Honours program (Pure Mathematics).
+```
+MATH
+MATH
+
 ```
 
 Not for credit, I have sat in on courses at AMSI summer school (Algebraic Knot Theory) and done reading courses at USYD.
