@@ -11,7 +11,7 @@ Here are some research projects and articles I have done in physics and mathemat
 *Published by The University of Sydney's Physics Society Journal (Jeremy Issue 3 and 4 of 2025)*  
  In a two-part article over two issues, Richard Nicotra and I set out to explain the mathematical underpinnings of the Bloch Sphere and the Hopf Fibration. In Spinors Part 1: Bloch Sphere and the Hopf Fibration, we explain the origin and formalism of the Bloch sphere using group theory, Mobius transformations, and fiber bundles. In Spinors Part 2: Rotations, Mobius Transformations, and SU(2), we go into more depth with some of the Mobius transformations that deal with rotations and how they relate to some of the group actions on spinors.
 
-[Article 1]({{ site.baseurl }}/_research/Jeremy_Article_Issue_3_2025___Wayne_Pooley-2.pdf) \| [Article 2]({{ site.baseurl }}/_research/Jeremy_Article_Issue_4_2025___Richard_Nicotra.pdf)
+[Article 1]({{ site.baseurl }}/_research/Jeremy_Article_Issue_3_2025___Wayne_Pooley_2.pdf) \| [Article 2]({{ site.baseurl }}/_research/Jeremy_Article_Issue_4_2025___Richard_Nicotra.pdf)
 
 ### Quantum Probability Measured
 *Published by The University of Sydney's Physics Society Journal (Jeremy Issue 2 of 2025)*  
