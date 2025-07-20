@@ -8,7 +8,7 @@ Here are some research projects and articles I have done in physics and mathemat
 
 ### Honours Project (Coming Soon)
 *Supervised by Prof. John Voight*
-More information to come.
+<!-- More information to come. -->
 
 ### Spinors Part 1 and 2
 *Published by The University of Sydney's Physics Society Journal (Jeremy Issue 3 and 4 of 2025)*  
