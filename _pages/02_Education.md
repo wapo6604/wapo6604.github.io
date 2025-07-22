@@ -77,8 +77,8 @@ OLET1640    Astronomy: from Big Bang to Darkness
 ### Honours Courses:
 Here are the mathematics units I am doing/have completed in my Honours program (Pure Mathematics).
 ```
-MATH4312 Commutative Algebra
-MATH5340 Topics in Topology (Algebraic Topology 2025)
+MATH4312    Commutative Algebra
+MATH5340    Topics in Topology (Algebraic Topology 2025)
 
 ```
 
