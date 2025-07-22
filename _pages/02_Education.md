@@ -4,10 +4,13 @@ title: Education
 permalink: /education/
 ---
 
-### Degree:
+### Degrees:
 ```
-Bachelor of Science with Honours (Mathematics and Physics)
-The University of Sydney (2022 - 2026)
+Bachelor of Science (Mathematics and Physics) 
+The University of Sydney (2022 - 2025)
+
+Honours Program: Pure Mathematics 
+The University of Sydney (2025-2026)
 
 ```
 
@@ -74,9 +77,9 @@ OLET1640    Astronomy: from Big Bang to Darkness
 ### Honours Courses:
 Here are the mathematics units I am doing/have completed in my Honours program (Pure Mathematics).
 ```
-MATH
-MATH
+MATH4312 Commutative Algebra
+MATH5340 Topics in Topology (Algebraic Topology 2025)
 
 ```
 
-Not for credit, I have sat in on courses at AMSI summer school (Algebraic Knot Theory) and done reading courses at USYD.
+Not for credit, I have sat in on courses at Australian Mathematical Sciences Institute's (AMSI) summer school (Algebraic Knot Theory) and done reading courses at USYD.
