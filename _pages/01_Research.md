@@ -11,8 +11,8 @@ Here are some research projects and articles I have done in physics and mathemat
 <!-- More information to come. -->
 
 ### Hopf on the Bloch: From Fiber Bundles to Qubits
-*Hosted by Sydney University Mathematics Society (SUMS)*
-    The Bloch sphere is the standard picture for representing qubits, but hidden behind it is a richer geometric story: the Hopf fibration, a beautiful map from the 3-sphere to the 2-sphere with circles as fibers. In this talk, we’ll explore how the Hopf fibration provides the natural framework for understanding the Bloch sphere, and how ideas from fiber bundles clarify the geometry of quantum states. Along the way, we’ll look at some nice visualizations that make these abstract constructions tangible.
+*Talk hosted by Sydney University Mathematics Society (SUMS)*
+ The Bloch sphere is the standard picture for representing qubits, but hidden behind it is a richer geometric story: the Hopf fibration, a beautiful map from the 3-sphere to the 2-sphere with circles as fibers. In this talk, we’ll explore how the Hopf fibration provides the natural framework for understanding the Bloch sphere, and how ideas from fiber bundles clarify the geometry of quantum states. Along the way, we’ll look at some nice visualizations that make these abstract constructions tangible.
 [Talk Slides]
 
 ### Spinors Part 1 and 2
