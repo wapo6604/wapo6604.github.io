@@ -10,6 +10,11 @@ Here are some research projects and articles I have done in physics and mathemat
 *Supervised by Prof. John Voight*
 <!-- More information to come. -->
 
+### Hopf on the Bloch: From Fiber Bundles to Qubits
+*Hosted by Sydney University Mathematics Society (SUMS)*
+The Bloch sphere is the standard picture for representing qubits, but hidden behind it is a richer geometric story: the Hopf fibration, a beautiful map from the 3-sphere to the 2-sphere with circles as fibers. In this talk, we’ll explore how the Hopf fibration provides the natural framework for understanding the Bloch sphere, and how ideas from fiber bundles clarify the geometry of quantum states. Along the way, we’ll look at some nice visualizations that make these abstract constructions tangible.
+[Talk Slides]
+
 ### Spinors Part 1 and 2
 *Published by The University of Sydney's Physics Society Journal (Jeremy Issue 3 and 4 of 2025)*  
  In a two-part article over two issues, Richard Nicotra and I set out to explain the mathematical underpinnings of the Bloch Sphere and the Hopf Fibration. In Spinors Part 1: Bloch Sphere and the Hopf Fibration, we explain the origin and formalism of the Bloch sphere using group theory, Mobius transformations, and fiber bundles. In Spinors Part 2: Rotations, Mobius Transformations, and SU(2), we go into more depth with some of the Mobius transformations that deal with rotations and how they relate to some of the group actions on spinors.
