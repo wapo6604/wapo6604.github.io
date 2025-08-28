@@ -13,6 +13,7 @@ Here are some research projects and articles I have done in physics and mathemat
 ### Hopf on the Bloch: From Fiber Bundles to Qubits
 *Talk hosted by Sydney University Mathematics Society*.  
  The Bloch sphere is the standard picture for representing qubits, but hidden behind it is a richer geometric story: the Hopf fibration, a beautiful map from the 3-sphere to the 2-sphere with circles as fibers. In this talk, we’ll explore how the Hopf fibration provides the natural framework for understanding the Bloch sphere, and how ideas from fiber bundles clarify the geometry of quantum states. Along the way, we’ll look at some nice visualizations that make these abstract constructions tangible. 
+ 
 [Slides]({{ site.baseurl }}/_research/SUMS_Talk___Wayne_Pooley (3).pdf)
 
 <!-- ### Hopf on the Bloch: From Fiber Bundles to Qubits
