@@ -8,6 +8,7 @@ Here are some research projects and articles I have done in physics and mathemat
 
 ### Honours Project: Algebraic Curves and their Genera
 *Supervised by Prof. John Voight*
+
  File and summary soon.
 
 ### Hopf on the Bloch: From Fiber Bundles to Qubits
