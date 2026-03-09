@@ -6,9 +6,9 @@ usemathjax: true
 ---
 Here are some research projects and articles I have done in physics and mathematics.
 
-### Honours Project (Coming Soon)
+### Honours Project: Algebraic Curves and their Genera
 *Supervised by Prof. John Voight*
-<!-- More information to come. -->
+ File and summary soon.
 
 ### Hopf on the Bloch: From Fiber Bundles to Qubits
 *Talk hosted by Sydney University Mathematics Society*.  

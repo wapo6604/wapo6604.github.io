@@ -33,6 +33,19 @@ Citadel Securities Prize, for highest average mark in data science in cohort
 (July 2023)
 ``` -->
 
+### Honours Courses:
+Here are the mathematics units I am doing/have completed in my Honours program (Pure Mathematics).
+```
+MATH4312    Commutative Algebra
+MATH5340    Topics in Topology (Algebraic Topology 2025)
+
+MATH4313    Functional Analysis
+MATH4314    Representation Theory
+
+```
+
+Not for credit, I have sat in on courses at Australian Mathematical Sciences Institute's (AMSI) summer school (Algebraic Knot Theory) and done reading courses at USYD.
+
 ### Undergraduate Courses:
 Here are the mathematics and physics units I have completed in my Bachelors of Science (Major Maths/Physics).
 
@@ -72,14 +85,3 @@ OLET1636    Astronomy: from Earth to Exoplanets
 OLET1640    Astronomy: from Big Bang to Darkness
 
 ```
-
-
-### Honours Courses:
-Here are the mathematics units I am doing/have completed in my Honours program (Pure Mathematics).
-```
-MATH4312    Commutative Algebra
-MATH5340    Topics in Topology (Algebraic Topology 2025)
-
-```
-
-Not for credit, I have sat in on courses at Australian Mathematical Sciences Institute's (AMSI) summer school (Algebraic Knot Theory) and done reading courses at USYD.
